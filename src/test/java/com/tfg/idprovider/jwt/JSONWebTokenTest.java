@@ -3,13 +3,21 @@ package com.tfg.idprovider.jwt;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.tfg.idprovider.service.UserService;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -23,7 +31,7 @@ public class JSONWebTokenTest {
     private RSAPrivateKey privateKey;
 
     public JSONWebTokenTest() throws NoSuchAlgorithmException {
-        this.generateKeys = new GenerateKeys(512);
+        this.generateKeys = new GenerateKeys(1024);
         generateKeys.createKeys();
         this.publicKey = (RSAPublicKey) generateKeys.getPublicKey();
         this.privateKey = (RSAPrivateKey) generateKeys.getPrivateKey();
@@ -31,19 +39,20 @@ public class JSONWebTokenTest {
 
     @Test
     public void createToken() {
-        Date date = Date.from(Instant.now().plus(1, ChronoUnit.DAYS));
+        Date date = dateExpires();
         Algorithm algorithm = getAlgorithm();
         Map<String, Object> headers = getHeaderClaims();
         String token = JSONWebToken.createToken(date, algorithm, headers);
+        DecodedJWT decodedJWT = verifyToken(token);
+
+        Assert.assertEquals(headers.get("typ"), decodedJWT.getHeaderClaim("typ").asString());
 
     }
 
-    @Test
-    public void verifyToken() {
-        String token = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCIsImV4cCI6MTU1MzAxOTM5OH0.VG9PQzXUGk-F9u47I2-rbU1BTrfe5sDANXpeukvge3xibcP2CJmp96zshKj74aXnmcAd-Cwj4aUpWlwBCBe7gw";
+    private DecodedJWT verifyToken(String token) {
         Algorithm algorithm = getAlgorithm();
         DecodedJWT decodedJWT = JSONWebToken.verifyToken(token, algorithm);
-        decodedJWT = JSONWebToken.decodeToken(token);
+        return JSONWebToken.decodeToken(token);
     }
 
     private Date dateExpires() {
@@ -55,9 +64,10 @@ public class JSONWebTokenTest {
     }
 
     private Map<String, Object> getHeaderClaims() {
-        Map<String, Object> headerClaims = new HashMap();
+        Map<String, Object> headerClaims = new HashMap<String, Object>();
         headerClaims.put("alg", "RS512");
         headerClaims.put("typ", "JWT");
         return headerClaims;
     }
+
 }

@@ -30,7 +30,7 @@ public class GenerateKeysTest {
     public void test() {
         GenerateKeys gk;
         try {
-            gk = new GenerateKeys(512);
+            gk = new GenerateKeys(1024);
             gk.createKeys();
             writeToFile("KeyPair/publicKey", gk.getPublicKey().getEncoded());
             System.out.println(gk.getPublicKey().toString());
