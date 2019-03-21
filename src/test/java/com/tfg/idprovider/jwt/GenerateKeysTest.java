@@ -28,14 +28,14 @@ public class GenerateKeysTest {
 
     @Test
     public void test() {
-        GenerateKeys gk;
+        GenerateKeys generateKeys;
         try {
-            gk = new GenerateKeys(1024);
-            gk.createKeys();
-            writeToFile("KeyPair/publicKey", gk.getPublicKey().getEncoded());
-            System.out.println(gk.getPublicKey().toString());
-            writeToFile("KeyPair/privateKey", gk.getPrivateKey().getEncoded());
-            System.out.println(gk.getPrivateKey().toString());
+            generateKeys = new GenerateKeys(1024);
+            generateKeys.createKeys();
+            writeToFile("KeyPair/publicKey", generateKeys.getPublicKey().getEncoded());
+            System.out.println(generateKeys.getPublicKey().toString());
+            writeToFile("KeyPair/privateKey", generateKeys.getPrivateKey().getEncoded());
+            System.out.println(generateKeys.getPrivateKey().toString());
         } catch (NoSuchAlgorithmException e) {
             System.err.println(e.getMessage());
         } catch (IOException e) {
@@ -43,24 +43,4 @@ public class GenerateKeysTest {
         }
     }
 
-/*
-    public PrivateKey getPrivate() throws Exception {
-        String filename = "KeyPair/privateKey";
-        byte[] keyBytes = Files.readAllBytes(new File(filename).toPath());
-        PKCS8EncodedKeySpec PKCS8spec = new PKCS8EncodedKeySpec(keyBytes);
-        System.out.println(PKCS8spec.toString());
-        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-        return keyFactory.generatePrivate(PKCS8spec);
-    }
-
-
-    public PublicKey getPublic() throws Exception {
-        String filename = "KeyPair/privateKey";
-        byte[] keyBytes = Files.readAllBytes(new File(filename).toPath());
-        X509EncodedKeySpec X509spec = new X509EncodedKeySpec(keyBytes);
-        System.out.println(X509spec.toString());
-        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-        return keyFactory.generatePublic(X509spec);
-    }
-    */
 }

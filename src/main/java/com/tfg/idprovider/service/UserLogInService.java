@@ -18,6 +18,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
@@ -29,62 +30,41 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
-public class UserService {
+public class UserLogInService {
 
-    public static final int KEY_LENGTH = 512;
+    private static final int KEY_LENGTH = 1024;
 
     private PasswordEncoder passwordEncoder;
     private UserRepository userRepository;
     private MongoUserDetailsService mongoUserDetailsService;
 
-    private GenerateKeys generateKeys;
     private RSAPublicKey publicKey;
     private RSAPrivateKey privateKey;
 
 
-    public UserService(PasswordEncoder passwordEncoder, UserRepository userRepository, MongoUserDetailsService mongoUserDetailsService) throws NoSuchAlgorithmException {
+    public UserLogInService(PasswordEncoder passwordEncoder, UserRepository userRepository, MongoUserDetailsService mongoUserDetailsService) throws Exception {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.mongoUserDetailsService = mongoUserDetailsService;
-        this.generateKeys = new GenerateKeys(KEY_LENGTH);
+        GenerateKeys generateKeys = new GenerateKeys(KEY_LENGTH);
         generateKeys.createKeys();
         this.publicKey = (RSAPublicKey) generateKeys.getPublicKey();
         this.privateKey = (RSAPrivateKey) generateKeys.getPrivateKey();
     }
 
-    public MyUser registerNewUserAccount(UserRegistrationDto accountDto) throws UserAlreadyExistException {
-        if (emailExists(accountDto.getEmail())) {
-            throw new UserAlreadyExistException("There is an account with that email adress: " + accountDto.getEmail());
-        }else if (usernameExists(accountDto.getUsername())) {
-            throw new UserAlreadyExistException("There is an account with that username: " + accountDto.getUsername());
-        }
 
-        final MyUser user = MyUserBuilder.builder()
-                .withUsername(accountDto.getUsername())
-                .withPassword(passwordEncoder.encode(accountDto.getPassword()))         //password encriptat amb BCrypt
-                .withEmail(accountDto.getEmail())
-                .withFirstName(accountDto.getFirstName())
-                .withLastName(accountDto.getLastName())
-                .withAuthorities(Arrays.asList(new SimpleGrantedAuthority("ROLE_USER") ))   //Definir varis ROLES
-                .build();
-
-        return userRepository.save(user);
-    }
 
     public ResponseEntity logIn(UserLogInDto user) {
         try {
             UserDetails userDetails = mongoUserDetailsService.loadUserByUsername(user.getUsername());
+            MyUser myUser = userRepository.findByUsername(user.getUsername());
             Algorithm algorithm = getAlgorithm();
             if (userDetails.getPassword().equals(user.getPassword())) {
                 Map<String, Object> headers = getHeaderClaims();
-                String token = JSONWebToken.createToken(dateExpires(), algorithm, headers);
+                Map<String, Object> payload = getPayloadClaims(myUser);
+                String token = JSONWebToken.createToken(algorithm, headers, payload);
                 return ResponseEntity.ok().body(token);
             }
-//        } catch (NoSuchAlgorithmException e) {
-//            e.printStackTrace();
-//            //Si falla la creacio de les claus publica privada retornem un HttpStatus 500
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-//        }
         }catch (JWTCreationException e) {
             e.printStackTrace();
             //Si falla la creacio del JWT retornem un HttpStatus 503
@@ -94,16 +74,16 @@ public class UserService {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
     }
 
-    private boolean emailExists(final String email) {
-        return userRepository.findByEmail(email) != null;
-    }
-
-    private boolean usernameExists(final String username) {
-        return userRepository.findByEmail(username) != null;
-    }
-
     private Date dateExpires() {
         return Date.from(Instant.now().plus(1, ChronoUnit.DAYS));
+    }
+
+    private Date dateNotBefore() {
+        return Date.from(Instant.now());
+    }
+
+    private Date dateNow() {
+        return Date.from(Instant.now());
     }
 
     private Algorithm getAlgorithm() {
@@ -112,8 +92,25 @@ public class UserService {
 
     private Map<String, Object> getHeaderClaims() {
         Map<String, Object> headerClaims = new HashMap();
-        headerClaims.put("alg", "RSA512");
+        headerClaims.put("alg", "RS512");
         headerClaims.put("typ", "JWT");
         return headerClaims;
+    }
+
+    private Map<String, Object> getPayloadClaims(MyUser myUser){
+        Map<String, Object> payloadClaims = new HashMap();
+        payloadClaims.put("iss", "auth0");
+        payloadClaims.put("sub", myUser.getEmail());
+        //payloadClaims.put("aud", );   //Per indicar a on dona acces
+        payloadClaims.put("exp", dateExpires());
+        payloadClaims.put("nbf", dateNotBefore());
+        payloadClaims.put("iat", dateNow());
+
+        //Claims propies
+        payloadClaims.put("username", myUser.getUsername());
+        payloadClaims.put("userId", myUser.get_id().toString());
+        payloadClaims.put("authorities", myUser.getAuthorities());
+
+        return payloadClaims;
     }
 }

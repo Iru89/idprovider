@@ -3,7 +3,8 @@ package com.tfg.idprovider.controller;
 import com.tfg.idprovider.exception.UserAlreadyExistException;
 import com.tfg.idprovider.model.dto.UserLogInDto;
 import com.tfg.idprovider.model.dto.UserRegistrationDto;
-import com.tfg.idprovider.service.UserService;
+import com.tfg.idprovider.service.UserLogInService;
+import com.tfg.idprovider.service.UserRegistrationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,23 +17,25 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
 
-    public UserService userService;
+    private UserLogInService userLogInService;
+    private UserRegistrationService userRegistrationService;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
+    public UserController(UserLogInService userLogInService, UserRegistrationService userRegistrationService) {
+        this.userLogInService = userLogInService;
+        this.userRegistrationService = userRegistrationService;
     }
 
     @RequestMapping(value = "/logIn", method = RequestMethod.POST)
     public ResponseEntity getJWT(UserLogInDto user){
-        return userService.logIn(user);
+        return userLogInService.logIn(user);
     }
 
     @RequestMapping(value = "/signUp", method = RequestMethod.POST)
     public ResponseEntity createUser(UserRegistrationDto user){
         try{
-            return ResponseEntity.ok().body(userService.registerNewUserAccount(user));
+            return ResponseEntity.ok().body(userRegistrationService.registerNewUserAccount(user));
         }catch (UserAlreadyExistException e){
-            return ResponseEntity.badRequest().body(false);
+            return ResponseEntity.badRequest().body(e.toString());
         }
     }
 }

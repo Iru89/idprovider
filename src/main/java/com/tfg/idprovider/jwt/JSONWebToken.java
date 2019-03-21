@@ -18,34 +18,33 @@ public class JSONWebToken {
 
     }
 
-    public static String createToken(Date dateExpires, Algorithm algorithm, Map<String, Object> headers) throws JWTCreationException {
+    public static String createToken(Algorithm algorithm, Map<String, Object> headers, Map<String, Object> payload) throws JWTCreationException {
         return JWT.create()
                 .withHeader(headers)
                 .withIssuer("auth0")
-                .withExpiresAt(dateExpires)
+                .withSubject(payload.get("sub").toString())
+                .withAudience()
+                .withExpiresAt((Date) payload.get("exp"))
+                .withNotBefore((Date) payload.get("nbf"))
+                .withIssuedAt((Date) payload.get("iat"))
+                //.withJWTId()
+                .withClaim("username", payload.get("username").toString())
+                .withClaim("userId", payload.get("userId").toString())
+                //.withArrayClaim("authorities", (String[]) payload.get("authorities"))
                 .sign(algorithm);
     }
 
     public static DecodedJWT verifyToken(String token, Algorithm algorithm) throws JWTVerificationException{
-//        DecodedJWT jwt = null;
-//        try {
-            JWTVerifier verifier = JWT.require(algorithm)
-                    .withIssuer("auth0")
-                    .build();                   //Reusable verifier instance
-             DecodedJWT jwt = verifier.verify(token);
-//        } catch (JWTVerificationException exception){
-//            //Invalid signature/claims
-//        }
+        JWTVerifier verifier = JWT.require(algorithm)
+                .withIssuer("auth0")
+                .acceptLeeway(5)            //Aceptem 5 seg de marge en exp nbf i iat
+                .build();                   //Reusable verifier instance
+        DecodedJWT jwt = verifier.verify(token);
         return jwt;
     }
 
     public static DecodedJWT decodeToken(String token) throws JWTDecodeException{
-//        DecodedJWT jwt = null;
-//        try {
-            DecodedJWT jwt = JWT.decode(token);
-//        } catch (JWTDecodeException exception){
-//            //Invalid token
-//        }
+        DecodedJWT jwt = JWT.decode(token);
         return jwt;
     }
 
