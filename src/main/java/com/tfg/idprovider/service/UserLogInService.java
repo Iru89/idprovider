@@ -5,6 +5,7 @@ import com.auth0.jwt.exceptions.JWTCreationException;
 import com.tfg.idprovider.jwt.GenerateKeys;
 import com.tfg.idprovider.jwt.JSONWebToken;
 import com.tfg.idprovider.model.MyUser;
+import com.tfg.idprovider.model.MyUserDetails;
 import com.tfg.idprovider.model.dto.UserLogInDto;
 import com.tfg.idprovider.repository.UserRepository;
 import org.springframework.http.HttpStatus;
@@ -48,12 +49,11 @@ public class UserLogInService {
 
     public ResponseEntity logIn(UserLogInDto user) {
         try {
-            UserDetails userDetails = mongoUserDetailsService.loadUserByUsername(user.getUsername());
-            MyUser myUser = userRepository.findByUsername(user.getUsername());
+            MyUserDetails myUserDetails = (MyUserDetails) mongoUserDetailsService.loadUserByUsername(user.getUsername());
             Algorithm algorithm = getAlgorithm();
-            if (userDetails.getPassword().equals(user.getPassword())) {
+            if (myUserDetails.getPassword().equals(user.getPassword())) {
                 Map<String, Object> headers = getHeaderClaims();
-                Map<String, Object> payload = getPayloadClaims(myUser);
+                Map<String, Object> payload = getPayloadClaims(myUserDetails.getMyUser());
                 String token = JSONWebToken.createToken(algorithm, headers, payload);
                 return ResponseEntity.ok().body(token);
             }
