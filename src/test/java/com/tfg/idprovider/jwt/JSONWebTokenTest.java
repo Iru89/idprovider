@@ -25,8 +25,8 @@ public class JSONWebTokenTest {
         this.generateKeys = new GenerateKeys(1024);
         generateKeys.createKeys();
         try {
-            this.publicKey = (RSAPublicKey) generateKeys.getPublicKey();
-            this.privateKey = (RSAPrivateKey) generateKeys.getPrivateKey();
+            this.publicKey = (RSAPublicKey) generateKeys.getPublicKeyFromFile();
+            this.privateKey = (RSAPrivateKey) generateKeys.getPrivateKeyFromFile();
         } catch (Exception e) {
             e.printStackTrace();
         }

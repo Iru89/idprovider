@@ -1,30 +1,22 @@
 package com.tfg.idprovider.service;
 
-import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.algorithms.Algorithm;
-
-import com.tfg.idprovider.exception.UserAlreadyExistException;
+import com.auth0.jwt.exceptions.JWTCreationException;
 import com.tfg.idprovider.jwt.GenerateKeys;
 import com.tfg.idprovider.jwt.JSONWebToken;
 import com.tfg.idprovider.model.MyUser;
-import com.tfg.idprovider.model.MyUser.MyUserBuilder;
 import com.tfg.idprovider.model.dto.UserLogInDto;
-import com.tfg.idprovider.model.dto.UserRegistrationDto;
 import com.tfg.idprovider.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;

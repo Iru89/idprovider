@@ -23,10 +23,10 @@ public class GenerateKeys {
         KeyPair keyPair = this.keyPairGenerator.generateKeyPair();
 
         this.privateKey = keyPair.getPrivate();
-        writeToFile("KeyPair/privateKey", getPrivateKey().getEncoded());
+        writeToFile("KeyPair/privateKey", keyPair.getPrivate().getEncoded());
 
         this.publicKey = keyPair.getPublic();
-        writeToFile("KeyPair/publicKey", getPublicKey().getEncoded());
+        writeToFile("KeyPair/publicKey", keyPair.getPublic().getEncoded());
     }
 
     public PrivateKey getPrivateKey() {
