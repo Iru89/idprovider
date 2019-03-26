@@ -11,8 +11,8 @@ import java.security.spec.X509EncodedKeySpec;
 public class GenerateKeys {
 
     private KeyPairGenerator keyPairGenerator;
-    private PrivateKey privateKey;
-    private PublicKey publicKey;
+//    private PrivateKey privateKey;
+//    private PublicKey publicKey;
 
     public GenerateKeys(int keyLength) throws NoSuchAlgorithmException {
         this.keyPairGenerator = KeyPairGenerator.getInstance("RSA");
@@ -22,14 +22,15 @@ public class GenerateKeys {
     public KeyPair createKeys() {
         KeyPair keyPair = this.keyPairGenerator.generateKeyPair();
 
-        this.privateKey = keyPair.getPrivate();
+//        this.privateKey = keyPair.getPrivate();
 //        writeToFile("KeyPair/privateKey", keyPair.getPrivate().getEncoded());
-
-        this.publicKey = keyPair.getPublic();
+//
+//        this.publicKey = keyPair.getPublic();
 //        writeToFile("KeyPair/publicKey", keyPair.getPublic().getEncoded());
         return keyPair;
     }
 
+/*
     public PrivateKey getPrivateKey() {
         return this.privateKey;
     }
@@ -38,7 +39,7 @@ public class GenerateKeys {
         return this.publicKey;
     }
 
-/*    private void writeToFile(String path, byte[] key) throws IOException {
+   private void writeToFile(String path, byte[] key) throws IOException {
         File file = new File(path);
         file.getParentFile().mkdirs();
 

@@ -32,10 +32,8 @@ public class UserController {
 
     @RequestMapping(value = "/signUp", method = RequestMethod.POST)
     public ResponseEntity createUser(UserRegistrationDto user){
-        try{
-            return ResponseEntity.ok().body(userRegistrationService.registerNewUserAccount(user));
-        }catch (UserAlreadyExistException e){
-            return ResponseEntity.badRequest().body(e.toString());
-        }
+
+            return userRegistrationService.registerNewUserAccount(user);
+
     }
 }
