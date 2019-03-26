@@ -5,12 +5,13 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.bson.types.ObjectId;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.List;
 
 
 @JsonDeserialize(builder = MyUser.MyUserBuilder.class)
-public class MyUser {
+public class MyUser implements UserDetails {
 
     private final ObjectId _id;
 
@@ -57,6 +58,26 @@ public class MyUser {
 
     public List<SimpleGrantedAuthority> getAuthorities() {
         return authorities;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return false;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return false;
     }
 
     @JsonPOJOBuilder

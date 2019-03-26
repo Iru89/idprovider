@@ -1,7 +1,6 @@
 package com.tfg.idprovider.service;
 
 import com.tfg.idprovider.model.MyUser;
-import com.tfg.idprovider.model.MyUserDetails;
 import com.tfg.idprovider.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -25,7 +24,19 @@ public class MongoUserDetailsService implements UserDetailsService {
         if(myUser == null) {
             throw new UsernameNotFoundException("The user with username "+ username +" can not be found");
         }
-        
-        return new MyUserDetails(myUser);
+
+        return myUser;
     }
+
+    /*private Collection<? extends GrantedAuthority> getAuthorities(Collection<Role> roles) {
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        for (Role role: roles) {
+            authorities.add(new SimpleGrantedAuthority(role.getName()));
+            role.getPrivileges().stream()
+                    .map(p -> new SimpleGrantedAuthority(p.getName()))
+                    .forEach(authorities::add);
+        }
+
+        return authorities;
+    }*/
 }

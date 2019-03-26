@@ -48,7 +48,7 @@ public class GenerateKeys {
     }
 
     public PrivateKey getPrivateKeyFromFile() throws Exception {
-        String filename = "KeyPair/privateKey";
+        String filename = "/Users/oriolraventosplans/Documents/EnginyeriaTelematica/TFG/idprovider/KeyPair/privateKey";
         byte[] keyBytes = Files.readAllBytes(new File(filename).toPath());
         PKCS8EncodedKeySpec PKCS8spec = new PKCS8EncodedKeySpec(keyBytes);
 //        System.out.println(PKCS8spec.toString());
@@ -58,7 +58,7 @@ public class GenerateKeys {
 
 
     public PublicKey getPublicKeyFromFile() throws Exception {
-        String filename = "KeyPair/privateKey";
+        String filename = "/Users/oriolraventosplans/Documents/EnginyeriaTelematica/TFG/idprovider/KeyPair/privateKey";
         byte[] keyBytes = Files.readAllBytes(new File(filename).toPath());
         X509EncodedKeySpec X509spec = new X509EncodedKeySpec(keyBytes);
 //        System.out.println(X509spec.toString());

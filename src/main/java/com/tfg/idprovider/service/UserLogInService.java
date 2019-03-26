@@ -5,12 +5,10 @@ import com.auth0.jwt.exceptions.JWTCreationException;
 import com.tfg.idprovider.jwt.GenerateKeys;
 import com.tfg.idprovider.jwt.JSONWebToken;
 import com.tfg.idprovider.model.MyUser;
-import com.tfg.idprovider.model.MyUserDetails;
 import com.tfg.idprovider.model.dto.UserLogInDto;
 import com.tfg.idprovider.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +26,6 @@ public class UserLogInService {
     private static final int KEY_LENGTH = 1024;
 
     private PasswordEncoder passwordEncoder;
-    private UserRepository userRepository;
     private MongoUserDetailsService mongoUserDetailsService;
 
     private RSAPublicKey publicKey;
@@ -37,7 +34,6 @@ public class UserLogInService {
 
     public UserLogInService(PasswordEncoder passwordEncoder, UserRepository userRepository, MongoUserDetailsService mongoUserDetailsService) throws Exception {
         this.passwordEncoder = passwordEncoder;
-        this.userRepository = userRepository;
         this.mongoUserDetailsService = mongoUserDetailsService;
         GenerateKeys generateKeys = new GenerateKeys(KEY_LENGTH);
         generateKeys.createKeys();
@@ -49,11 +45,11 @@ public class UserLogInService {
 
     public ResponseEntity logIn(UserLogInDto user) {
         try {
-            MyUserDetails myUserDetails = (MyUserDetails) mongoUserDetailsService.loadUserByUsername(user.getUsername());
+            MyUser myUserDetails = (MyUser) mongoUserDetailsService.loadUserByUsername(user.getUsername());
             Algorithm algorithm = getAlgorithm();
             if (myUserDetails.getPassword().equals(user.getPassword())) {
                 Map<String, Object> headers = getHeaderClaims();
-                Map<String, Object> payload = getPayloadClaims(myUserDetails.getMyUser());
+                Map<String, Object> payload = getPayloadClaims(myUserDetails);
                 String token = JSONWebToken.createToken(algorithm, headers, payload);
                 return ResponseEntity.ok().body(token);
             }

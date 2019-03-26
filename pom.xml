@@ -8,9 +8,11 @@
 		<version>2.1.3.RELEASE</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
+
 	<groupId>com.tfg</groupId>
 	<artifactId>idprovider</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+
 	<name>idprovider</name>
 	<description>Demo project for Spring Boot</description>
 
@@ -38,12 +40,13 @@
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-
+		<!-- Llibreria de JSON Web Token -->
 		<dependency>
 			<groupId>com.auth0</groupId>
 			<artifactId>java-jwt</artifactId>
 			<version>3.7.0</version>
 		</dependency>
+		<!-- Llibreria per serialitzar JSON -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
@@ -56,6 +59,7 @@
             <version>3.0.1</version>
             <scope>provided</scope>
         </dependency>
+
 	</dependencies>
 
 	<build>
