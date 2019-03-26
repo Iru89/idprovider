@@ -4,98 +4,54 @@ package com.tfg.idprovider.model;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.bson.types.ObjectId;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.List;
+import java.security.KeyPair;
 
 
 @JsonDeserialize(builder = MyUser.MyUserBuilder.class)
-public class MyUser implements UserDetails {
+public class MyUser {
 
     private final ObjectId _id;
 
-    private final String username;
-    private final String password;
-    private final String firstName;
-    private final String lastName;
-    private final String email;
-    private final List<SimpleGrantedAuthority> authorities;
+    private final MyUserAccess myUserAccess;
+    private final KeyPair keyPair;
+    private final PersonalData personalData;
 
-    private MyUser(ObjectId _id, String username, String password,String firstName, String lastName, String email, List<SimpleGrantedAuthority> authorities) {
+    public MyUser(ObjectId _id, MyUserAccess myUserAccess, KeyPair keyPair, PersonalData personalData) {
         this._id = _id;
-        this.username = username;
-        this.password = password;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.authorities = authorities;
+        this.myUserAccess = myUserAccess;
+        this.keyPair = keyPair;
+        this.personalData = personalData;
     }
 
     public ObjectId get_id() {
         return _id;
     }
 
-    public String getUsername() {
-        return username;
+    public MyUserAccess getMyUserAccess() {
+        return myUserAccess;
     }
 
-    public String getPassword() {
-        return password;
+    public KeyPair getKeyPair() {
+        return keyPair;
     }
 
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public List<SimpleGrantedAuthority> getAuthorities() {
-        return authorities;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return false;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return false;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return false;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return false;
+    public PersonalData getPersonalData() {
+        return personalData;
     }
 
     @JsonPOJOBuilder
-    public static class MyUserBuilder{
+    public class MyUserBuilder{
 
         private ObjectId _id;
-
-        private String username;
-        private String password;
-        private String firstName;
-        private String lastName;
-        private String email;
-        private List<SimpleGrantedAuthority> authorities;
+        private MyUserAccess myUserAccess;
+        private KeyPair keyPair;
+        private PersonalData personalData;
 
         private MyUserBuilder() {
         }
 
-        public static MyUserBuilder builder(){
+        public MyUserBuilder builder(){
             return new MyUserBuilder();
         }
 
@@ -104,41 +60,24 @@ public class MyUser implements UserDetails {
             return this;
         }
 
-        public MyUserBuilder withUsername(String username) {
-            this.username = username;
+        public MyUserBuilder withMyUserAccess(MyUserAccess myUserAccess) {
+            this.myUserAccess = myUserAccess;
             return this;
         }
 
-        public MyUserBuilder withPassword(String password) {
-            this.password = password;
+        public MyUserBuilder withKeyPair(KeyPair keyPair) {
+            this.keyPair = keyPair;
             return this;
         }
 
-        public MyUserBuilder withFirstName(String firstName){
-            this.firstName = firstName;
-            return this;
-        }
-
-        public MyUserBuilder withLastName(String lastName){
-            this.lastName = lastName;
-            return this;
-        }
-
-        public MyUserBuilder withEmail(String email){
-            this.email = email;
-            return this;
-        }
-
-        public MyUserBuilder withAuthorities(List<SimpleGrantedAuthority> authorities) {
-            this.authorities = authorities;
+        public MyUserBuilder withPersonalData(PersonalData personalData) {
+            this.personalData = personalData;
             return this;
         }
 
         public MyUser build(){
-            return new MyUser(_id, username, password, firstName, lastName, email,  authorities);
+            return new MyUser(_id, myUserAccess, keyPair, personalData);
         }
-
-
     }
 }
 
