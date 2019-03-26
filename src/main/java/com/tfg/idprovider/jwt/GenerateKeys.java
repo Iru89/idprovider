@@ -19,14 +19,15 @@ public class GenerateKeys {
         this.keyPairGenerator.initialize(keyLength);
     }
 
-    public void createKeys() throws IOException {
+    public KeyPair createKeys() {
         KeyPair keyPair = this.keyPairGenerator.generateKeyPair();
 
         this.privateKey = keyPair.getPrivate();
-        writeToFile("KeyPair/privateKey", keyPair.getPrivate().getEncoded());
+//        writeToFile("KeyPair/privateKey", keyPair.getPrivate().getEncoded());
 
         this.publicKey = keyPair.getPublic();
-        writeToFile("KeyPair/publicKey", keyPair.getPublic().getEncoded());
+//        writeToFile("KeyPair/publicKey", keyPair.getPublic().getEncoded());
+        return keyPair;
     }
 
     public PrivateKey getPrivateKey() {
@@ -37,7 +38,7 @@ public class GenerateKeys {
         return this.publicKey;
     }
 
-    private void writeToFile(String path, byte[] key) throws IOException {
+/*    private void writeToFile(String path, byte[] key) throws IOException {
         File file = new File(path);
         file.getParentFile().mkdirs();
 
@@ -64,6 +65,6 @@ public class GenerateKeys {
 //        System.out.println(X509spec.toString());
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
         return keyFactory.generatePublic(X509spec);
-    }
+    }*/
 
 }

@@ -29,7 +29,7 @@ public class PersonalData {
     }
 
     @JsonPOJOBuilder
-    public class PersonalDataBuilder{
+    public static class PersonalDataBuilder{
         private String firstName;
         private String lastName;
         private String email;
@@ -37,7 +37,7 @@ public class PersonalData {
         private PersonalDataBuilder() {
         }
 
-        public PersonalDataBuilder builder(){
+        public static PersonalDataBuilder builder(){
             return new PersonalDataBuilder();
         }
 

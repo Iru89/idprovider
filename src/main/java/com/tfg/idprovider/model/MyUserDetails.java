@@ -2,6 +2,7 @@ package com.tfg.idprovider.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import org.bson.types.ObjectId;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,8 +10,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
-@JsonDeserialize(builder = MyUserAccess.MyUserAccessBuilder.class)
-public class MyUserAccess implements UserDetails {
+@JsonDeserialize(builder = MyUserDetails.MyUserDeitailsBuilder.class)
+public class MyUserDetails implements UserDetails {
+
+    private final ObjectId _id;
 
     private final String username;
     private final String password;
@@ -20,7 +23,8 @@ public class MyUserAccess implements UserDetails {
     private final boolean credentialsNonExpired;
     private final boolean enabled;
 
-    private MyUserAccess(String username, String password, List<SimpleGrantedAuthority> authorities, boolean accountNonExpired, boolean accountNonLocked, boolean credentialsNonExpired, boolean enabled) {
+    private MyUserDetails(ObjectId _id, String username, String password, List<SimpleGrantedAuthority> authorities, boolean accountNonExpired, boolean accountNonLocked, boolean credentialsNonExpired, boolean enabled) {
+        this._id = _id;
         this.username = username;
         this.password = password;
         this.authorities = authorities;
@@ -28,6 +32,10 @@ public class MyUserAccess implements UserDetails {
         this.accountNonLocked = accountNonLocked;
         this.credentialsNonExpired = credentialsNonExpired;
         this.enabled = enabled;
+    }
+
+    public ObjectId get_id() {
+        return _id;
     }
 
     @Override
@@ -66,7 +74,8 @@ public class MyUserAccess implements UserDetails {
     }
 
     @JsonPOJOBuilder
-    public class MyUserAccessBuilder{
+    public static class MyUserDeitailsBuilder {
+        private ObjectId _id;
         private String username;
         private String password;
         private List<SimpleGrantedAuthority> authorities;
@@ -75,50 +84,55 @@ public class MyUserAccess implements UserDetails {
         private boolean credentialsNonExpired;
         private boolean enabled;
 
-        private MyUserAccessBuilder() {
+        private MyUserDeitailsBuilder() {
         }
 
-        public MyUserAccessBuilder builder(){
-            return new MyUserAccessBuilder();
+        public static MyUserDeitailsBuilder builder(){
+            return new MyUserDeitailsBuilder();
         }
 
-        public MyUserAccessBuilder withUsername(String username) {
+        public MyUserDeitailsBuilder with_id(ObjectId _id) {
+            this._id = _id;
+            return this;
+        }
+
+        public MyUserDeitailsBuilder withUsername(String username) {
             this.username = username;
             return this;
         }
 
-        public MyUserAccessBuilder withPassword(String password) {
+        public MyUserDeitailsBuilder withPassword(String password) {
             this.password = password;
             return this;
         }
 
-        public MyUserAccessBuilder withAuthorities(List<SimpleGrantedAuthority> authorities) {
+        public MyUserDeitailsBuilder withAuthorities(List<SimpleGrantedAuthority> authorities) {
             this.authorities = authorities;
             return this;
         }
 
-        public MyUserAccessBuilder withAccountNonExpired(boolean accountNonExpired) {
+        public MyUserDeitailsBuilder withAccountNonExpired(boolean accountNonExpired) {
             this.accountNonExpired = accountNonExpired;
             return this;
         }
 
-        public MyUserAccessBuilder withAccountNonLocked(boolean accountNonLocked) {
+        public MyUserDeitailsBuilder withAccountNonLocked(boolean accountNonLocked) {
             this.accountNonLocked = accountNonLocked;
             return this;
         }
 
-        public MyUserAccessBuilder withCredentialsNonExpired(boolean credentialsNonExpired) {
+        public MyUserDeitailsBuilder withCredentialsNonExpired(boolean credentialsNonExpired) {
             this.credentialsNonExpired = credentialsNonExpired;
             return this;
         }
 
-        public MyUserAccessBuilder withEnabled(boolean enabled) {
+        public MyUserDeitailsBuilder withEnabled(boolean enabled) {
             this.enabled = enabled;
             return this;
         }
 
-        public MyUserAccess build(){
-            return new MyUserAccess(username, password, authorities, accountNonExpired, accountNonLocked, credentialsNonExpired, enabled);
+        public MyUserDetails build(){
+            return new MyUserDetails(_id, username, password, authorities, accountNonExpired, accountNonLocked, credentialsNonExpired, enabled);
         }
     }
 }

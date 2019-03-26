@@ -12,14 +12,16 @@ import java.security.KeyPair;
 public class MyUser {
 
     private final ObjectId _id;
+    private final ObjectId userDetailsId;
 
-    private final MyUserAccess myUserAccess;
+    private final MyUserDetails myUserDetails;
     private final KeyPair keyPair;
     private final PersonalData personalData;
 
-    public MyUser(ObjectId _id, MyUserAccess myUserAccess, KeyPair keyPair, PersonalData personalData) {
+    public MyUser(ObjectId _id, ObjectId userDetailsId, MyUserDetails myUserDetails, KeyPair keyPair, PersonalData personalData) {
         this._id = _id;
-        this.myUserAccess = myUserAccess;
+        this.userDetailsId = userDetailsId;
+        this.myUserDetails = myUserDetails;
         this.keyPair = keyPair;
         this.personalData = personalData;
     }
@@ -28,8 +30,12 @@ public class MyUser {
         return _id;
     }
 
-    public MyUserAccess getMyUserAccess() {
-        return myUserAccess;
+    public ObjectId getUserDetailsId() {
+        return userDetailsId;
+    }
+
+    public MyUserDetails getMyUserDetails() {
+        return myUserDetails;
     }
 
     public KeyPair getKeyPair() {
@@ -41,17 +47,18 @@ public class MyUser {
     }
 
     @JsonPOJOBuilder
-    public class MyUserBuilder{
+    public static class MyUserBuilder{
 
         private ObjectId _id;
-        private MyUserAccess myUserAccess;
+        private ObjectId userDetailsId;
+        private MyUserDetails myUserDetails;
         private KeyPair keyPair;
         private PersonalData personalData;
 
         private MyUserBuilder() {
         }
 
-        public MyUserBuilder builder(){
+        public static MyUserBuilder builder(){
             return new MyUserBuilder();
         }
 
@@ -60,8 +67,13 @@ public class MyUser {
             return this;
         }
 
-        public MyUserBuilder withMyUserAccess(MyUserAccess myUserAccess) {
-            this.myUserAccess = myUserAccess;
+        public MyUserBuilder withUserDetailsId(ObjectId userDetailsId) {
+            this.userDetailsId = userDetailsId;
+            return this;
+        }
+
+        public MyUserBuilder withMyUserAccess(MyUserDetails myUserDetails) {
+            this.myUserDetails = myUserDetails;
             return this;
         }
 
@@ -76,7 +88,7 @@ public class MyUser {
         }
 
         public MyUser build(){
-            return new MyUser(_id, myUserAccess, keyPair, personalData);
+            return new MyUser(_id, userDetailsId, myUserDetails, keyPair, personalData);
         }
     }
 }
