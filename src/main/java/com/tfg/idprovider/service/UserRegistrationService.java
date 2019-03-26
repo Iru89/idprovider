@@ -49,7 +49,7 @@ public class UserRegistrationService {
         try {
             generateKeys = new GenerateKeys(KEY_LENGTH);
         } catch (NoSuchAlgorithmException e) {
-            ResponseEntity.badRequest().body(e.toString());
+            return ResponseEntity.badRequest().body(e.toString());
         }
 
         final KeyPair keyPair = generateKeys.createKeys();
