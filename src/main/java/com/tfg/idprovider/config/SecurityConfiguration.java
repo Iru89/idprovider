@@ -42,8 +42,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    public void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService);
+    public void configure(AuthenticationManagerBuilder auth) {
+//        auth.userDetailsService(userDetailsService);
         auth.authenticationProvider(authProvider());
     }
 }

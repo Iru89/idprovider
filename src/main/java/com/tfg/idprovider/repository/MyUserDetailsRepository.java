@@ -10,6 +10,6 @@ public interface MyUserDetailsRepository extends MongoRepository<MyUserDetails, 
     MyUserDetails findBy_id(ObjectId _id);
     MyUserDetails findByUsername(String username);
     MyUserDetails findByEmail(String email);
-    MyUserDetails save(MyUserDetails user);
+    MyUserDetails save(MyUserDetails myUserDetails);
     List<MyUserDetails> deleteBy_id(ObjectId _id);
 }
