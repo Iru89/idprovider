@@ -8,12 +8,10 @@ public class PersonalData {
 
     private final String firstName;
     private final String lastName;
-    private final String email;
 
-    private PersonalData(String firstName, String lastName, String email) {
+    private PersonalData(String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.email = email;
     }
 
     public String getFirstName() {
@@ -24,15 +22,11 @@ public class PersonalData {
         return lastName;
     }
 
-    public String getEmail() {
-        return email;
-    }
 
     @JsonPOJOBuilder
     public static class PersonalDataBuilder{
         private String firstName;
         private String lastName;
-        private String email;
 
         private PersonalDataBuilder() {
         }
@@ -51,13 +45,8 @@ public class PersonalData {
             return this;
         }
 
-        public PersonalDataBuilder withEmail(String email) {
-            this.email = email;
-            return this;
-        }
-
         public PersonalData build(){
-            return new PersonalData(firstName, lastName, email);
+            return new PersonalData(firstName, lastName);
         }
     }
 }

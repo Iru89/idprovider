@@ -4,42 +4,84 @@ package com.tfg.idprovider.model;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-import java.security.KeyPair;
+import java.util.List;
 
 
 @JsonDeserialize(builder = MyUser.MyUserBuilder.class)
-public class MyUser {
+public class MyUser implements UserDetails {
 
-    private final ObjectId _id;
-    private final ObjectId userDetailsId;
+    @Id
+    private final ObjectId id;
 
-    private final MyUserDetails myUserDetails;
-    private final KeyPair keyPair;
+    private final String username;
+    private final String password;
+    private final String email;
+    private final List<SimpleGrantedAuthority> authorities;
+    private final boolean accountNonExpired;
+    private final boolean accountNonLocked;
+    private final boolean credentialsNonExpired;
+    private final boolean enabled;
     private final PersonalData personalData;
 
-    public MyUser(ObjectId _id, ObjectId userDetailsId, MyUserDetails myUserDetails, KeyPair keyPair, PersonalData personalData) {
-        this._id = _id;
-        this.userDetailsId = userDetailsId;
-        this.myUserDetails = myUserDetails;
-        this.keyPair = keyPair;
+    public MyUser(ObjectId id, String username, String password, String email, List<SimpleGrantedAuthority> authorities, boolean accountNonExpired, boolean accountNonLocked, boolean credentialsNonExpired, boolean enabled, PersonalData personalData) {
+        this.id = id;
+
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.authorities = authorities;
+        this.accountNonExpired = accountNonExpired;
+        this.accountNonLocked = accountNonLocked;
+        this.credentialsNonExpired = credentialsNonExpired;
+        this.enabled = enabled;
         this.personalData = personalData;
     }
 
-    public ObjectId get_id() {
-        return _id;
+    public ObjectId getId() {
+        return id;
     }
 
-    public ObjectId getUserDetailsId() {
-        return userDetailsId;
+    @Override
+    public String getUsername() {
+        return username;
     }
 
-    public MyUserDetails getMyUserDetails() {
-        return myUserDetails;
+    @Override
+    public String getPassword() {
+        return password;
     }
 
-    public KeyPair getKeyPair() {
-        return keyPair;
+    public String getEmail() {
+        return email;
+    }
+
+    @Override
+    public List<SimpleGrantedAuthority> getAuthorities() {
+        return authorities;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return accountNonExpired;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return accountNonLocked;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return credentialsNonExpired;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
     }
 
     public PersonalData getPersonalData() {
@@ -49,10 +91,16 @@ public class MyUser {
     @JsonPOJOBuilder
     public static class MyUserBuilder{
 
-        private ObjectId _id;
-        private ObjectId userDetailsId;
-        private MyUserDetails myUserDetails;
-        private KeyPair keyPair;
+        private ObjectId id;
+
+        private String username;
+        private String password;
+        private String email;
+        private List<SimpleGrantedAuthority> authorities;
+        private boolean accountNonExpired;
+        private boolean accountNonLocked;
+        private boolean credentialsNonExpired;
+        private boolean enabled;
         private PersonalData personalData;
 
         private MyUserBuilder() {
@@ -62,23 +110,48 @@ public class MyUser {
             return new MyUserBuilder();
         }
 
-        public MyUserBuilder with_id(ObjectId _id) {
-            this._id = _id;
+        public MyUserBuilder withId(ObjectId id) {
+            this.id = id;
             return this;
         }
 
-        public MyUserBuilder withUserDetailsId(ObjectId userDetailsId) {
-            this.userDetailsId = userDetailsId;
+        public MyUserBuilder withUsername(String username) {
+            this.username = username;
             return this;
         }
 
-        public MyUserBuilder withMyUserAccess(MyUserDetails myUserDetails) {
-            this.myUserDetails = myUserDetails;
+        public MyUserBuilder withPassword(String password) {
+            this.password = password;
             return this;
         }
 
-        public MyUserBuilder withKeyPair(KeyPair keyPair) {
-            this.keyPair = keyPair;
+        public MyUserBuilder withEmail(String email) {
+            this.email = email;
+            return this;
+        }
+
+        public MyUserBuilder withAuthorities(List<SimpleGrantedAuthority> authorities) {
+            this.authorities = authorities;
+            return this;
+        }
+
+        public MyUserBuilder withAccountNonExpired(boolean accountNonExpired) {
+            this.accountNonExpired = accountNonExpired;
+            return this;
+        }
+
+        public MyUserBuilder withAccountNonLocked(boolean accountNonLocked) {
+            this.accountNonLocked = accountNonLocked;
+            return this;
+        }
+
+        public MyUserBuilder withCredentialsNonExpired(boolean credentialsNonExpired) {
+            this.credentialsNonExpired = credentialsNonExpired;
+            return this;
+        }
+
+        public MyUserBuilder withEnabled(boolean enabled) {
+            this.enabled = enabled;
             return this;
         }
 
@@ -88,7 +161,7 @@ public class MyUser {
         }
 
         public MyUser build(){
-            return new MyUser(_id, userDetailsId, myUserDetails, keyPair, personalData);
+            return new MyUser(id, username, password, email, authorities, accountNonExpired, accountNonLocked, credentialsNonExpired, enabled, personalData);
         }
     }
 }

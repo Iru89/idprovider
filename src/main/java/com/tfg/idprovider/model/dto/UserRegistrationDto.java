@@ -13,7 +13,7 @@ public class UserRegistrationDto {
     private final String lastName;
     private final String email;
 
-    public UserRegistrationDto(String username, String password, String firstName, String lastName, String email) {
+    private UserRegistrationDto(String username, String password, String firstName, String lastName, String email) {
         this.username = username;
         this.password = password;
         this.firstName = firstName;
@@ -42,7 +42,7 @@ public class UserRegistrationDto {
     }
 
     @JsonPOJOBuilder
-    public class UserRegistrationDtoBuilder{
+    public static class UserRegistrationDtoBuilder{
 
         private String username;
         private String password;
@@ -53,7 +53,7 @@ public class UserRegistrationDto {
         private UserRegistrationDtoBuilder() {
         }
 
-        public UserRegistrationDtoBuilder builder(){
+        public static UserRegistrationDtoBuilder builder(){
             return new UserRegistrationDtoBuilder();
         }
 

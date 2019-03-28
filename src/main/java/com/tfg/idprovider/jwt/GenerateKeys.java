@@ -66,6 +66,7 @@ public class GenerateKeys {
 //        System.out.println(X509spec.toString());
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
         return keyFactory.generatePublic(X509spec);
-    }*/
+    }
+*/
 
 }
