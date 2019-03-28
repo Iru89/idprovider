@@ -1,9 +1,10 @@
 package com.tfg.idprovider.config;
 
-import com.mongodb.MongoClient;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.SimpleMongoClientDbFactory;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 @Configuration
@@ -11,13 +12,11 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 public class SimpleMongoConfiguration {
 
 
-    @Bean
-    public MongoClient mongo() throws Exception{
-        return new MongoClient();
-    }
+    @Value("${spring.data.mongodb.uri}")
+    private String connectionString;
 
     @Bean
-    public MongoTemplate mongoTemplate() throws Exception{
-        return new MongoTemplate(mongo(), "test");
+    public MongoTemplate mongoTemplate() {
+        return new MongoTemplate(new SimpleMongoClientDbFactory(connectionString));
     }
 }
