@@ -9,6 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @JsonDeserialize(builder = MyUser.MyUserBuilder.class)
@@ -21,24 +22,31 @@ public class MyUser implements UserDetails {
     private final String password;
     private final String email;
     private final List<SimpleGrantedAuthority> authorities;
-    private final boolean accountNonExpired;
-    private final boolean accountNonLocked;
-    private final boolean credentialsNonExpired;
-    private final boolean enabled;
     private final PersonalData personalData;
 
-    private MyUser(ObjectId id, String username, String password, String email, List<SimpleGrantedAuthority> authorities, boolean accountNonExpired, boolean accountNonLocked, boolean credentialsNonExpired, boolean enabled, PersonalData personalData) {
+    private MyUser(ObjectId id, String username, String password, String email, List<SimpleGrantedAuthority> authorities,  PersonalData personalData) {
         this.id = id;
 
         this.username = username;
         this.password = password;
         this.email = email;
         this.authorities = authorities;
-        this.accountNonExpired = accountNonExpired;
-        this.accountNonLocked = accountNonLocked;
-        this.credentialsNonExpired = credentialsNonExpired;
-        this.enabled = enabled;
         this.personalData = personalData;
+    }
+
+    public static MyUser create(User user) {
+        List<SimpleGrantedAuthority> authorities = user.getRoles().stream()
+                .map(role -> new SimpleGrantedAuthority(role.name()))
+                .collect(Collectors.toList());
+
+        return MyUserBuilder.builder()
+                .withId(user.getId())
+                .withUsername(user.getUsername())
+                .withPassword(user.getPassword())
+                .withEmail(user.getEmail())
+                .withAuthorities(authorities)
+                .withPersonalData(user.getPersonalData())
+                .build();
     }
 
     public ObjectId getId() {
@@ -66,22 +74,22 @@ public class MyUser implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return accountNonExpired;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return accountNonLocked;
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return credentialsNonExpired;
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return enabled;
+        return true;
     }
 
     public PersonalData getPersonalData() {
@@ -97,10 +105,6 @@ public class MyUser implements UserDetails {
         private String password;
         private String email;
         private List<SimpleGrantedAuthority> authorities;
-        private boolean accountNonExpired;
-        private boolean accountNonLocked;
-        private boolean credentialsNonExpired;
-        private boolean enabled;
         private PersonalData personalData;
 
         private MyUserBuilder() {
@@ -135,33 +139,13 @@ public class MyUser implements UserDetails {
             return this;
         }
 
-        public MyUserBuilder withAccountNonExpired(boolean accountNonExpired) {
-            this.accountNonExpired = accountNonExpired;
-            return this;
-        }
-
-        public MyUserBuilder withAccountNonLocked(boolean accountNonLocked) {
-            this.accountNonLocked = accountNonLocked;
-            return this;
-        }
-
-        public MyUserBuilder withCredentialsNonExpired(boolean credentialsNonExpired) {
-            this.credentialsNonExpired = credentialsNonExpired;
-            return this;
-        }
-
-        public MyUserBuilder withEnabled(boolean enabled) {
-            this.enabled = enabled;
-            return this;
-        }
-
         public MyUserBuilder withPersonalData(PersonalData personalData) {
             this.personalData = personalData;
             return this;
         }
 
         public MyUser build(){
-            return new MyUser(id, username, password, email, authorities, accountNonExpired, accountNonLocked, credentialsNonExpired, enabled, personalData);
+            return new MyUser(id, username, password, email, authorities, personalData);
         }
     }
 }

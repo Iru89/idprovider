@@ -1,16 +1,12 @@
 package com.tfg.idprovider.service;
 
-import com.tfg.idprovider.model.MyUser;
 import com.tfg.idprovider.model.PersonalData;
 import com.tfg.idprovider.model.Role;
+import com.tfg.idprovider.model.User;
 import com.tfg.idprovider.model.dto.UserSignUpDto;
 import com.tfg.idprovider.repository.UserRepository;
-import com.tfg.idprovider.security.JwtTokenProvider;
 import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,50 +18,45 @@ public class SignUpService {
 //    @Autowired
 //    RoleRepository roleRepository;
 
-    private AuthenticationManager authenticationManager;
-    private JwtTokenProvider tokenProvider;
     private PasswordEncoder passwordEncoder;
     private UserRepository userRepository;
 
-    public SignUpService(AuthenticationManager authenticationManager, JwtTokenProvider tokenProvider, PasswordEncoder passwordEncoder, UserRepository userRepository) {
-        this.authenticationManager = authenticationManager;
-        this.tokenProvider = tokenProvider;
+    public SignUpService(PasswordEncoder passwordEncoder, UserRepository userRepository) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
     }
 
-    public ResponseEntity registerNewUserAccount(UserSignUpDto accountDto) {
+    /*Permite hacer el login con el username o con el email*/
+    public ResponseEntity registerNewUserAccount(UserSignUpDto userSignUpDto) {
 
-        if(userRepository.existsByUsername(accountDto.getUsername())) {
+        if(userRepository.existsByUsername(userSignUpDto.getUsername())) {
             return ResponseEntity.badRequest().body("Username is already taken!");
         }
 
-        if(userRepository.existsByEmail(accountDto.getEmail())) {
+        if(userRepository.existsByEmail(userSignUpDto.getEmail())) {
             return ResponseEntity.badRequest().body("Email Address already in use!");
         }
 
-        final PersonalData personalData = getPersonalData(accountDto);
+        final PersonalData personalData = getPersonalData(userSignUpDto);
 
-//        Role userRole = roleRepository.findByName(RoleName.ROLE_USER)
-//                .orElseThrow(() -> new AppException("User Role not set."));
+//        Role userRole = roleRepository.findByName(Role.ROLE_USER)
+//                .orElseThrow(
+//                      () -> new AppException("User Role not set.")
+//                );
 //        user.setRoles(Collections.singleton(userRole));
 
-        final MyUser registeredUser = saveNewMyUser(accountDto, personalData);
+        final User registeredUser = saveNewUser(userSignUpDto, personalData);
 
-        return ResponseEntity.ok().body("User registered successfully");
+        return ResponseEntity.ok().body("User registered successfully with id: " + registeredUser.getId());
     }
 
-    private MyUser saveNewMyUser(UserSignUpDto accountDto, PersonalData personalData) {
-        final MyUser newUser = MyUser.MyUserBuilder.builder()
+    private User saveNewUser(UserSignUpDto accountDto, PersonalData personalData) {
+        final User newUser = User.UserBuilder.builder()
                 .withId(new ObjectId())
                 .withUsername(accountDto.getUsername())
                 .withPassword(passwordEncoder.encode(accountDto.getPassword()))         //password Encriptat amb BCrypt
                 .withEmail(accountDto.getEmail())
-                .withAuthorities(Collections.singletonList(new SimpleGrantedAuthority(Role.ROLE_USER.name())))    //Role USER
-                .withAccountNonExpired(true)
-                .withAccountNonLocked(true)
-                .withCredentialsNonExpired(true)
-                .withEnabled(true)
+                .withAuthorities(Collections.singletonList(Role.ROLE_USER))
                 .withPersonalData(personalData)
                 .build();
 
@@ -79,9 +70,5 @@ public class SignUpService {
                     .withFirstName(accountDto.getFirstName())
                     .withLastName(accountDto.getLastName())
                     .build();
-    }
-    private boolean usernameExists(final String username) {
-        MyUser myUser = userRepository.findByUsername(username);
-        return myUser != null;
     }
 }

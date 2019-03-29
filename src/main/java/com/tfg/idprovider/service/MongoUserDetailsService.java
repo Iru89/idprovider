@@ -1,6 +1,7 @@
 package com.tfg.idprovider.service;
 
 import com.tfg.idprovider.model.MyUser;
+import com.tfg.idprovider.model.User;
 import com.tfg.idprovider.repository.UserRepository;
 import org.bson.types.ObjectId;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,23 +22,27 @@ public class MongoUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
-        MyUser user = userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail)
-                .orElseThrow(() ->
-                        new UsernameNotFoundException("User not found with username or email : " + usernameOrEmail)
+        final User user = userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail)
+                .orElseThrow(
+                        () ->new UsernameNotFoundException("User not found with username or email : " + usernameOrEmail)
                 );
 
+        final MyUser myUser = MyUser.create(user);
 
-        return user;
+        return myUser;
     }
 
     // This method is used by JWTAuthenticationFilter
     @Transactional
     public UserDetails loadUserById(ObjectId id) {
-        MyUser user = userRepository.findById(id).orElseThrow(
-                () -> new UsernameNotFoundException("User not found with id : " + id)
-        );
+        final User user = userRepository.findById(id)
+                .orElseThrow(
+                        () -> new UsernameNotFoundException("User not found with id : " + id)
+                );
 
-        return user;
+        final MyUser myUser = MyUser.create(user);
+
+        return myUser;
     }
 
 }
