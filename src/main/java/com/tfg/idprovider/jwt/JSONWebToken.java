@@ -13,15 +13,12 @@ import java.util.Map;
 
 public class JSONWebToken {
 
-
-    public JSONWebToken() {
-
-    }
+    private static final String ISSUER = "authIru";
 
     public static String createToken(Algorithm algorithm, Map<String, Object> headers, Map<String, Object> payload) throws JWTCreationException {
         return JWT.create()
                 .withHeader(headers)
-                .withIssuer("auth0")
+                .withIssuer(ISSUER)
                 .withSubject(payload.get("sub").toString())
                 .withAudience()
                 .withExpiresAt((Date) payload.get("exp"))
@@ -36,7 +33,7 @@ public class JSONWebToken {
 
     public static DecodedJWT verifyToken(String token, Algorithm algorithm) throws JWTVerificationException{
         JWTVerifier verifier = JWT.require(algorithm)
-                .withIssuer("auth0")
+                .withIssuer(ISSUER)
                 .acceptLeeway(5)            //Aceptem 5 seg de marge en exp nbf i iat
                 .build();                   //Reusable verifier instance
         DecodedJWT jwt = verifier.verify(token);

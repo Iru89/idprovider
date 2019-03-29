@@ -1,35 +1,33 @@
 package com.tfg.idprovider.controller;
 
 import com.tfg.idprovider.model.dto.UserLogInDto;
-import com.tfg.idprovider.model.dto.UserRegistrationDto;
-import com.tfg.idprovider.service.UserLogInService;
-import com.tfg.idprovider.service.UserRegistrationService;
+import com.tfg.idprovider.model.dto.UserSignUpDto;
+import com.tfg.idprovider.service.LogInService;
+import com.tfg.idprovider.service.SignUpService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
-@CrossOrigin
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/auth")
 public class UserController {
 
+    private LogInService logInService;
+    private SignUpService signUpService;
 
-    private UserLogInService userLogInService;
-    private UserRegistrationService userRegistrationService;
-
-    public UserController(UserLogInService userLogInService, UserRegistrationService userRegistrationService) {
-        this.userLogInService = userLogInService;
-        this.userRegistrationService = userRegistrationService;
+    public UserController(LogInService logInService, SignUpService signUpService) {
+        this.logInService = logInService;
+        this.signUpService = signUpService;
     }
 
     @RequestMapping(value = "/logIn", method = RequestMethod.POST)
     public ResponseEntity getJWT(@Valid @RequestBody UserLogInDto user){
-        return userLogInService.logIn(user);
+        return logInService.logIn(user);
     }
 
     @RequestMapping(value = "/signUp", method = RequestMethod.POST)
-    public ResponseEntity createUser(@Valid @RequestBody UserRegistrationDto user){
-        return userRegistrationService.registerNewUserAccount(user);
+    public ResponseEntity createUser(@Valid @RequestBody UserSignUpDto user){
+        return signUpService.registerNewUserAccount(user);
     }
 }

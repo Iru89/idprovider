@@ -6,16 +6,16 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 @JsonDeserialize(builder = UserLogInDto.UserLogInDtoBuilder.class)
 public class UserLogInDto {
 
-    private final String username;
+    private final String usernameOrEmail;
     private final String password;
 
-    private UserLogInDto(String username, String password) {
-        this.username = username;
+    private UserLogInDto(String usernameOrEmail, String password) {
+        this.usernameOrEmail = usernameOrEmail;
         this.password = password;
     }
 
-    public String getUsername() {
-        return username;
+    public String getUsernameOrEmail() {
+        return usernameOrEmail;
     }
 
     public String getPassword() {
@@ -25,7 +25,7 @@ public class UserLogInDto {
     @JsonPOJOBuilder
     public static class UserLogInDtoBuilder{
 
-        private String username;
+        private String usernameOrEmail;
         private String password;
 
         private UserLogInDtoBuilder() {
@@ -35,8 +35,8 @@ public class UserLogInDto {
             return new UserLogInDtoBuilder();
         }
 
-        public UserLogInDtoBuilder withUsername(String username) {
-            this.username = username;
+        public UserLogInDtoBuilder withUsernameOrEmail(String usernameOrEmail) {
+            this.usernameOrEmail = usernameOrEmail;
             return this;
         }
 
@@ -46,7 +46,7 @@ public class UserLogInDto {
         }
 
         public UserLogInDto build(){
-            return new UserLogInDto(username, password);
+            return new UserLogInDto(usernameOrEmail, password);
         }
     }
 

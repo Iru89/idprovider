@@ -27,7 +27,7 @@ public class MyUser implements UserDetails {
     private final boolean enabled;
     private final PersonalData personalData;
 
-    public MyUser(ObjectId id, String username, String password, String email, List<SimpleGrantedAuthority> authorities, boolean accountNonExpired, boolean accountNonLocked, boolean credentialsNonExpired, boolean enabled, PersonalData personalData) {
+    private MyUser(ObjectId id, String username, String password, String email, List<SimpleGrantedAuthority> authorities, boolean accountNonExpired, boolean accountNonLocked, boolean credentialsNonExpired, boolean enabled, PersonalData personalData) {
         this.id = id;
 
         this.username = username;

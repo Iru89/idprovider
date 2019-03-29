@@ -3,8 +3,8 @@ package com.tfg.idprovider.model.dto;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
-@JsonDeserialize(builder = UserRegistrationDto.UserRegistrationDtoBuilder.class)
-public class UserRegistrationDto {
+@JsonDeserialize(builder = UserSignUpDto.UserRegistrationDtoBuilder.class)
+public class UserSignUpDto {
 
     private final String username;
     private final String password;
@@ -13,7 +13,7 @@ public class UserRegistrationDto {
     private final String lastName;
     private final String email;
 
-    private UserRegistrationDto(String username, String password, String firstName, String lastName, String email) {
+    private UserSignUpDto(String username, String password, String firstName, String lastName, String email) {
         this.username = username;
         this.password = password;
         this.firstName = firstName;
@@ -82,8 +82,8 @@ public class UserRegistrationDto {
             return this;
         }
 
-        public UserRegistrationDto build(){
-            return new UserRegistrationDto(username, password, firstName, lastName, email);
+        public UserSignUpDto build(){
+            return new UserSignUpDto(username, password, firstName, lastName, email);
         }
     }
 
