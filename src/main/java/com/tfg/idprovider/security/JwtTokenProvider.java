@@ -21,6 +21,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.tfg.idprovider.jwt.JSONWebToken.ISSUER;
+
 @Component
 public class JwtTokenProvider {
 
@@ -67,8 +69,7 @@ public class JwtTokenProvider {
     }
 
     private Algorithm getAlgorithm() throws NoSuchAlgorithmException {
-        GenerateKeys generateKeys = null;
-        generateKeys = new GenerateKeys(KEY_LENGTH);
+        GenerateKeys generateKeys = new GenerateKeys(KEY_LENGTH);
         KeyPair keyPair = generateKeys.createKeys();
         RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
         RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
@@ -84,7 +85,7 @@ public class JwtTokenProvider {
 
     private Map<String, Object> getPayloadClaims(MyUser myUser){
         Map<String, Object> payloadClaims = new HashMap();
-        payloadClaims.put("iss", "auth0");
+        payloadClaims.put("iss", ISSUER);
         payloadClaims.put("sub", myUser.getEmail());
         //payloadClaims.put("aud", );   //Per indicar a on dona acces
         payloadClaims.put("exp", dateExpires());

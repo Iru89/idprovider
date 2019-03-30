@@ -1,8 +1,10 @@
 package com.tfg.idprovider.service;
 
 import com.tfg.idprovider.model.PersonalData;
+import com.tfg.idprovider.model.PersonalData.PersonalDataBuilder;
 import com.tfg.idprovider.model.Role;
 import com.tfg.idprovider.model.User;
+import com.tfg.idprovider.model.User.UserBuilder;
 import com.tfg.idprovider.model.dto.UserSignUpDto;
 import com.tfg.idprovider.repository.UserRepository;
 import org.bson.types.ObjectId;
@@ -14,9 +16,6 @@ import java.util.Collections;
 
 @Service
 public class SignUpService {
-
-//    @Autowired
-//    RoleRepository roleRepository;
 
     private PasswordEncoder passwordEncoder;
     private UserRepository userRepository;
@@ -39,19 +38,13 @@ public class SignUpService {
 
         final PersonalData personalData = getPersonalData(userSignUpDto);
 
-//        Role userRole = roleRepository.findByName(Role.ROLE_USER)
-//                .orElseThrow(
-//                      () -> new AppException("User Role not set.")
-//                );
-//        user.setRoles(Collections.singleton(userRole));
-
         final User registeredUser = saveNewUser(userSignUpDto, personalData);
 
         return ResponseEntity.ok().body("User registered successfully with id: " + registeredUser.getId());
     }
 
     private User saveNewUser(UserSignUpDto accountDto, PersonalData personalData) {
-        final User newUser = User.UserBuilder.builder()
+        final User newUser = UserBuilder.builder()
                 .withId(new ObjectId())
                 .withUsername(accountDto.getUsername())
                 .withPassword(passwordEncoder.encode(accountDto.getPassword()))         //password Encriptat amb BCrypt
@@ -66,9 +59,11 @@ public class SignUpService {
     }
 
     private PersonalData getPersonalData(UserSignUpDto accountDto) {
-        return PersonalData.PersonalDataBuilder.builder()
+        final PersonalData  personalData = PersonalDataBuilder.builder()
                     .withFirstName(accountDto.getFirstName())
                     .withLastName(accountDto.getLastName())
                     .build();
+
+        return personalData;
     }
 }

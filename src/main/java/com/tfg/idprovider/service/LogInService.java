@@ -1,6 +1,8 @@
 package com.tfg.idprovider.service;
 
 import com.auth0.jwt.exceptions.JWTCreationException;
+import com.tfg.idprovider.model.dto.JwtAuthenticationDto;
+import com.tfg.idprovider.model.dto.JwtAuthenticationDto.JwtAuthenticationDtoBuilder;
 import com.tfg.idprovider.model.dto.UserLogInDto;
 import com.tfg.idprovider.security.JwtTokenProvider;
 import org.springframework.http.HttpStatus;
@@ -35,7 +37,11 @@ public class LogInService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         try {
-            String jwt = tokenProvider.generateToken(authentication);
+            String accessToken = tokenProvider.generateToken(authentication);
+            JwtAuthenticationDto jwt = JwtAuthenticationDtoBuilder.builder()
+                    .withAccessToken(accessToken)
+                    .build();
+
             return ResponseEntity.ok(jwt);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();

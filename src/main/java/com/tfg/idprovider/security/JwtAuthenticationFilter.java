@@ -20,13 +20,15 @@ import java.io.IOException;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    @Autowired
     private JwtTokenProvider tokenProvider;
-
-    @Autowired
     private MongoUserDetailsService mongoUserDetailsService;
 
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
+
+    public JwtAuthenticationFilter(JwtTokenProvider tokenProvider, MongoUserDetailsService mongoUserDetailsService) {
+        this.tokenProvider = tokenProvider;
+        this.mongoUserDetailsService = mongoUserDetailsService;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {

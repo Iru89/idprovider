@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 public class MongoUserDetailsService implements UserDetailsService {
 
-
     private UserRepository userRepository;
 
     public MongoUserDetailsService(UserRepository userRepository) {
@@ -32,7 +31,7 @@ public class MongoUserDetailsService implements UserDetailsService {
         return myUser;
     }
 
-    // This method is used by JWTAuthenticationFilter
+    // Este metodo lo utiliza JWTAuthenticationFilter
     @Transactional
     public UserDetails loadUserById(ObjectId id) {
         final User user = userRepository.findById(id)

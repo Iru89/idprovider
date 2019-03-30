@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class JSONWebToken {
 
-    private static final String ISSUER = "authIru";
+    public static final String ISSUER = "authIru";
 
     public static String createToken(Algorithm algorithm, Map<String, Object> headers, Map<String, Object> payload) throws JWTCreationException {
         return JWT.create()
