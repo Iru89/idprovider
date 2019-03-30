@@ -1,6 +1,6 @@
 package com.tfg.idprovider.service;
 
-import com.tfg.idprovider.model.MyUser;
+import com.tfg.idprovider.model.MyUserDetails;
 import com.tfg.idprovider.model.User;
 import com.tfg.idprovider.repository.UserRepository;
 import org.bson.types.ObjectId;
@@ -26,9 +26,9 @@ public class MongoUserDetailsService implements UserDetailsService {
                         () ->new UsernameNotFoundException("User not found with username or email : " + usernameOrEmail)
                 );
 
-        final MyUser myUser = MyUser.create(user);
+        final MyUserDetails myUserDetails = MyUserDetails.create(user);
 
-        return myUser;
+        return myUserDetails;
     }
 
     // Este metodo lo utiliza JWTAuthenticationFilter
@@ -39,9 +39,9 @@ public class MongoUserDetailsService implements UserDetailsService {
                         () -> new UsernameNotFoundException("User not found with id : " + id)
                 );
 
-        final MyUser myUser = MyUser.create(user);
+        final MyUserDetails myUserDetails = MyUserDetails.create(user);
 
-        return myUser;
+        return myUserDetails;
     }
 
 }

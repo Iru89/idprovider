@@ -11,12 +11,12 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/auth")
-public class UserController {
+public class AuthController {
 
     private LogInService logInService;
     private SignUpService signUpService;
 
-    public UserController(LogInService logInService, SignUpService signUpService) {
+    public AuthController(LogInService logInService, SignUpService signUpService) {
         this.logInService = logInService;
         this.signUpService = signUpService;
     }
