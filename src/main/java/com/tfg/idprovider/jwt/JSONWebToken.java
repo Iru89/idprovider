@@ -27,7 +27,7 @@ public class JSONWebToken {
                 //.withJWTId()
                 .withClaim("username", payload.get("username").toString())
                 .withClaim("userId", payload.get("userId").toString())
-                //.withArrayClaim("authorities", (String[]) payload.get("authorities"))
+                //.withArrayClaim("authorities", payload.get("authorities"))
                 .sign(algorithm);
     }
 

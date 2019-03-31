@@ -2,6 +2,8 @@ package com.tfg.idprovider.security;
 
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
+import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.tfg.idprovider.jwt.JSONWebToken;
@@ -11,7 +13,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.security.KeyPair;
-import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.time.Instant;
@@ -31,11 +32,11 @@ public class JwtTokenProvider {
         this.keyPair = keyPair;
     }
 
-    public String generateToken(Authentication authentication) throws NoSuchAlgorithmException, JWTCreationException {
+    public String generateToken(Authentication authentication) throws JWTCreationException {
 
         MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
 
-        Algorithm algorithm = getAlgorithm();
+        Algorithm algorithm = getAlgorithm(keyPair);
         Map<String, Object> headers = getHeaderClaims();
         Map<String, Object> payload = getPayloadClaims(myUserDetails);
 
@@ -43,19 +44,29 @@ public class JwtTokenProvider {
     }
 
     public ObjectId getUserIdFromJWT(String token) {
-        DecodedJWT decodedJWT = JSONWebToken.decodeToken(token);
 
-        Claim claim = decodedJWT.getClaim("userId");
-        if(!claim.isNull()){
-            return new ObjectId(claim.asString());
+        try{
+            DecodedJWT decodedJWT = JSONWebToken.decodeToken(token);
+
+            Claim claim = decodedJWT.getClaim("userId");
+            if(!claim.isNull()){
+                return new ObjectId(claim.asString());
+            }
+            return null;
+        }catch (JWTDecodeException e) {
+            e.printStackTrace();
+            return null;
         }
-        return null;
     }
 
-    public boolean validateToken(String authToken) throws NoSuchAlgorithmException {
-        Algorithm algorithm = getAlgorithm();
-        DecodedJWT decodedJWT = JSONWebToken.verifyToken(authToken, algorithm);
-        return true;
+    public boolean validateToken(String authToken) {
+        try{
+            Algorithm algorithm = getAlgorithm(keyPair);
+            DecodedJWT decodedJWT = JSONWebToken.verifyToken(authToken, algorithm);
+            return true;
+        }catch (JWTVerificationException e ){
+            return false;
+        }
     }
 
 
@@ -71,7 +82,7 @@ public class JwtTokenProvider {
         return Date.from(Instant.now());
     }
 
-    private Algorithm getAlgorithm() throws NoSuchAlgorithmException {
+    private static Algorithm getAlgorithm(KeyPair keyPair) {
         RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
         RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
         return Algorithm.RSA512(publicKey, privateKey);

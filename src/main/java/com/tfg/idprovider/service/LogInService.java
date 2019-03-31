@@ -43,10 +43,7 @@ public class LogInService {
                     .build();
 
             return ResponseEntity.ok(jwt);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            //Si falla la creacion del algorithm retornamos un HttpStatus 400
-            return ResponseEntity.badRequest().body(e.toString());
+
         }catch (JWTCreationException e) {
             e.printStackTrace();
             //Si falla la creacion del JWT retornamos un HttpStatus 503
