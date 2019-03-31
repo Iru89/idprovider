@@ -1,12 +1,12 @@
 package com.tfg.idprovider.security;
 
+import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.tfg.idprovider.jwt.JSONWebToken;
 import com.tfg.idprovider.model.MyUserDetails;
 import org.bson.types.ObjectId;
 import org.springframework.security.core.Authentication;
@@ -38,15 +38,26 @@ public class JwtTokenProvider {
 
         Algorithm algorithm = getAlgorithm(keyPair);
         Map<String, Object> headers = getHeaderClaims();
-        Map<String, Object> payload = getPayloadClaims(myUserDetails);
 
-        return JSONWebToken.createToken(algorithm, headers, payload);
+        return JWT.create()
+                .withHeader(headers)
+                .withIssuer(ISSUER)
+                .withSubject(myUserDetails.getEmail())
+                .withAudience()
+                .withExpiresAt(dateExpires())
+                .withNotBefore(dateNotBefore())
+                .withIssuedAt(dateIssuedAt())
+                .withClaim("username", myUserDetails.getUsername())
+                .withClaim("userId", myUserDetails.getId().toString())
+                .withArrayClaim("authorities", getRoles(myUserDetails))
+                .sign(algorithm);
+
     }
 
     public ObjectId getUserIdFromJWT(String token) {
 
         try{
-            DecodedJWT decodedJWT = JSONWebToken.decodeToken(token);
+            DecodedJWT decodedJWT = JWT.decode(token);
 
             Claim claim = decodedJWT.getClaim("userId");
             if(!claim.isNull()){
@@ -62,7 +73,11 @@ public class JwtTokenProvider {
     public boolean validateToken(String authToken) {
         try{
             Algorithm algorithm = getAlgorithm(keyPair);
-            DecodedJWT decodedJWT = JSONWebToken.verifyToken(authToken, algorithm);
+            DecodedJWT decodedJWT = JWT.require(algorithm)
+                    .withIssuer(ISSUER)
+                    .acceptLeeway(5)            //Aceptem 5 seg de marge en exp nbf i iat
+                    .build()                    //Reusable verifier instance//JSONWebToken.verifyToken(authToken, algorithm);
+                    .verify(authToken);
             return true;
         }catch (JWTVerificationException e ){
             return false;
@@ -78,11 +93,11 @@ public class JwtTokenProvider {
         return Date.from(Instant.now());
     }
 
-    private Date dateNow() {
+    private Date dateIssuedAt() {
         return Date.from(Instant.now());
     }
 
-    private static Algorithm getAlgorithm(KeyPair keyPair) {
+    private Algorithm getAlgorithm(KeyPair keyPair) {
         RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
         RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
         return Algorithm.RSA512(publicKey, privateKey);
@@ -95,20 +110,8 @@ public class JwtTokenProvider {
         return headerClaims;
     }
 
-    private Map<String, Object> getPayloadClaims(MyUserDetails myUserDetails){
-        Map<String, Object> payloadClaims = new HashMap();
-        payloadClaims.put("iss", ISSUER);
-        payloadClaims.put("sub", myUserDetails.getEmail());
-        //payloadClaims.put("aud", );   //Per indicar a on dona acces
-        payloadClaims.put("exp", dateExpires());
-        payloadClaims.put("nbf", dateNotBefore());
-        payloadClaims.put("iat", dateNow());
-
-        //Claims propies
-        payloadClaims.put("username", myUserDetails.getUsername());
-        payloadClaims.put("userId", myUserDetails.getId().toString());
-        payloadClaims.put("authorities", myUserDetails.getAuthorities());
-
-        return payloadClaims;
+    private String[] getRoles(MyUserDetails myUserDetails) {
+        return myUserDetails.getAuthorities().stream().map(a->a.getAuthority()).toArray(String[]::new);
     }
+
 }
