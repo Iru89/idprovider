@@ -21,11 +21,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.tfg.idprovider.jwt.JSONWebToken.ISSUER;
 
 @Component
 public class JwtTokenProvider {
 
+    public static final String ISSUER = "authIru";
     private KeyPair keyPair;
 
     public JwtTokenProvider(KeyPair keyPair) {
@@ -76,7 +76,7 @@ public class JwtTokenProvider {
             DecodedJWT decodedJWT = JWT.require(algorithm)
                     .withIssuer(ISSUER)
                     .acceptLeeway(5)            //Aceptem 5 seg de marge en exp nbf i iat
-                    .build()                    //Reusable verifier instance//JSONWebToken.verifyToken(authToken, algorithm);
+                    .build()
                     .verify(authToken);
             return true;
         }catch (JWTVerificationException e ){
