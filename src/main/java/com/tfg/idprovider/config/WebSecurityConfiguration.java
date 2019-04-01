@@ -38,7 +38,10 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     private JwtTokenProvider jwtTokenProvider;
 
     @Autowired
-    public WebSecurityConfiguration(MongoUserDetailsService mongoUserDetailsService, JwtAuthenticationEntryPoint unauthorizedHandler, JwtTokenProvider jwtTokenProvider) {
+    public WebSecurityConfiguration(MongoUserDetailsService mongoUserDetailsService,
+                                    JwtAuthenticationEntryPoint unauthorizedHandler,
+                                    JwtTokenProvider jwtTokenProvider) {
+
         this.mongoUserDetailsService = mongoUserDetailsService;
         this.unauthorizedHandler = unauthorizedHandler;
         this.jwtTokenProvider = jwtTokenProvider;

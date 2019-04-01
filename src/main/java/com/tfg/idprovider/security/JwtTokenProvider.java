@@ -25,7 +25,7 @@ import java.util.Map;
 @Component
 public class JwtTokenProvider {
 
-    public static final String ISSUER = "authIru";
+    private static final String ISSUER = "authIru";
     private KeyPair keyPair;
 
     public JwtTokenProvider(KeyPair keyPair) {
