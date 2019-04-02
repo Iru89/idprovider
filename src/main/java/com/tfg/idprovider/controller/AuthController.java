@@ -21,12 +21,12 @@ public class AuthController {
         this.signUpService = signUpService;
     }
 
-    @RequestMapping(value = "/logIn", method = RequestMethod.POST)
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
     public ResponseEntity getJWT(@Valid @RequestBody UserLogInDto user){
         return logInService.logIn(user);
     }
 
-    @RequestMapping(value = "/signUp", method = RequestMethod.POST)
+    @RequestMapping(value = "/signup", method = RequestMethod.POST)
     public ResponseEntity createUser(@Valid @RequestBody UserSignUpDto user){
         return signUpService.registerNewUserAccount(user);
     }

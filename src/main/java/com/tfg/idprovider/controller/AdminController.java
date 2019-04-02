@@ -1,7 +1,6 @@
 package com.tfg.idprovider.controller;
 
 import com.tfg.idprovider.service.AdminService;
-import org.bson.types.ObjectId;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;

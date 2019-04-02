@@ -12,18 +12,15 @@ public class User {
 
     private String username;
     private String password;
-    private String firstName;
-    private String lastName;
     private String email;
     private List<Role> roles;
     private PersonalData personalData;
 
-    private User(ObjectId id, String username, String password, String firstName, String lastName, String email, List<Role> roles, PersonalData personalData) {
+    private User(ObjectId id, String username, String password, String email, List<Role> roles, PersonalData personalData) {
         this.id = id;
         this.username = username;
         this.password = password;
-        this.firstName = firstName;
-        this.lastName = lastName;
+
         this.email = email;
         this.roles = roles;
         this.personalData = personalData;
@@ -39,14 +36,6 @@ public class User {
 
     public String getPassword() {
         return password;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
     }
 
     public String getEmail() {
@@ -65,8 +54,6 @@ public class User {
         private  ObjectId id;
         private String username;
         private String password;
-        private String firstName;
-        private String lastName;
         private String email;
         private List<Role> roles;
         private PersonalData personalData;
@@ -93,16 +80,6 @@ public class User {
             return this;
         }
 
-        public UserBuilder withFirstName(String firstName) {
-            this.firstName = firstName;
-            return this;
-        }
-
-        public UserBuilder withLastName(String lastName) {
-            this.lastName = lastName;
-            return this;
-        }
-
         public UserBuilder withEmail(String email) {
             this.email = email;
             return this;
@@ -119,7 +96,7 @@ public class User {
         }
 
         public User build(){
-            return new User(id, username, password, firstName, lastName, email, roles, personalData);
+            return new User(id, username, password, email, roles, personalData);
         }
     }
 }
