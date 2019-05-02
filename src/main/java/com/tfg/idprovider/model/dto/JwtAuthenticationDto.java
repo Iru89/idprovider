@@ -3,11 +3,11 @@ package com.tfg.idprovider.model.dto;
 public class JwtAuthenticationDto {
 
     private final String accessToken;
-    private final String TokenType;
+    private final String tokenType;
 
     private JwtAuthenticationDto(String accessToken, String tokenType) {
         this.accessToken = accessToken;
-        TokenType = tokenType;
+        this.tokenType = tokenType;
     }
 
     public String getAccessToken() {
@@ -15,7 +15,7 @@ public class JwtAuthenticationDto {
     }
 
     public String getTokenType() {
-        return TokenType;
+        return tokenType;
     }
 
     public static class JwtAuthenticationDtoBuilder{
