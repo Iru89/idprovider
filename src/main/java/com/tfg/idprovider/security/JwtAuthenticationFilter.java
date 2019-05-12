@@ -19,13 +19,13 @@ import java.io.IOException;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private JwtProvider tokenProvider;
+    private JwtProvider jwtProvider;
     private MongoUserDetailsService mongoUserDetailsService;
 
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
-    public JwtAuthenticationFilter(JwtProvider tokenProvider, MongoUserDetailsService mongoUserDetailsService) {
-        this.tokenProvider = tokenProvider;
+    public JwtAuthenticationFilter(JwtProvider jwtProvider, MongoUserDetailsService mongoUserDetailsService) {
+        this.jwtProvider = jwtProvider;
         this.mongoUserDetailsService = mongoUserDetailsService;
     }
 
@@ -34,8 +34,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             String jwt = getJwtFromRequest(request);
 
-            if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
-                ObjectId userId = tokenProvider.getUserIdFromJWT(jwt);
+            if (StringUtils.hasText(jwt) && jwtProvider.validateToken(jwt)) {
+                ObjectId userId = jwtProvider.getUserIdFromJWT(jwt);
 
                 UserDetails userDetails = mongoUserDetailsService.loadUserById(userId);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
