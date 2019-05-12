@@ -2,7 +2,7 @@ package com.tfg.idprovider.config;
 
 import com.tfg.idprovider.security.JwtAuthenticationEntryPoint;
 import com.tfg.idprovider.security.JwtAuthenticationFilter;
-import com.tfg.idprovider.security.JwtTokenProvider;
+import com.tfg.idprovider.security.JwtProvider;
 import com.tfg.idprovider.service.MongoUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
@@ -34,16 +34,16 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private MongoUserDetailsService mongoUserDetailsService;
     private JwtAuthenticationEntryPoint unauthorizedHandler;
-    private JwtTokenProvider jwtTokenProvider;
+    private JwtProvider jwtProvider;
 
     @Autowired
     public WebSecurityConfiguration(MongoUserDetailsService mongoUserDetailsService,
                                     JwtAuthenticationEntryPoint unauthorizedHandler,
-                                    JwtTokenProvider jwtTokenProvider) {
+                                    JwtProvider jwtProvider) {
 
         this.mongoUserDetailsService = mongoUserDetailsService;
         this.unauthorizedHandler = unauthorizedHandler;
-        this.jwtTokenProvider = jwtTokenProvider;
+        this.jwtProvider = jwtProvider;
     }
 
     @Override
@@ -75,7 +75,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter(jwtTokenProvider, mongoUserDetailsService);
+        return new JwtAuthenticationFilter(jwtProvider, mongoUserDetailsService);
     }
 
 

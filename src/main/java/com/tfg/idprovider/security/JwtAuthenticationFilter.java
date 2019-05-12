@@ -19,12 +19,12 @@ import java.io.IOException;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private JwtTokenProvider tokenProvider;
+    private JwtProvider tokenProvider;
     private MongoUserDetailsService mongoUserDetailsService;
 
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
-    public JwtAuthenticationFilter(JwtTokenProvider tokenProvider, MongoUserDetailsService mongoUserDetailsService) {
+    public JwtAuthenticationFilter(JwtProvider tokenProvider, MongoUserDetailsService mongoUserDetailsService) {
         this.tokenProvider = tokenProvider;
         this.mongoUserDetailsService = mongoUserDetailsService;
     }

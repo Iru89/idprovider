@@ -23,12 +23,12 @@ import java.util.Map;
 
 
 @Component
-public class JwtTokenProvider {
+public class JwtProvider {
 
     private static final String ISSUER = "authIru";
     private KeyPair keyPair;
 
-    public JwtTokenProvider(KeyPair keyPair) {
+    public JwtProvider(KeyPair keyPair) {
         this.keyPair = keyPair;
     }
 

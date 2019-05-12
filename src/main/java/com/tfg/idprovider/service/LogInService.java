@@ -4,7 +4,7 @@ import com.auth0.jwt.exceptions.JWTCreationException;
 import com.tfg.idprovider.model.dto.JwtAuthenticationDto;
 import com.tfg.idprovider.model.dto.JwtAuthenticationDto.JwtAuthenticationDtoBuilder;
 import com.tfg.idprovider.model.dto.UserLogInDto;
-import com.tfg.idprovider.security.JwtTokenProvider;
+import com.tfg.idprovider.security.JwtProvider;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,15 +13,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.security.NoSuchAlgorithmException;
-
 @Service
 public class LogInService {
 
     private AuthenticationManager authenticationManager;
-    private JwtTokenProvider tokenProvider;
+    private JwtProvider tokenProvider;
 
-    public LogInService(AuthenticationManager authenticationManager, JwtTokenProvider tokenProvider) {
+    public LogInService(AuthenticationManager authenticationManager, JwtProvider tokenProvider) {
         this.authenticationManager = authenticationManager;
         this.tokenProvider = tokenProvider;
     }
