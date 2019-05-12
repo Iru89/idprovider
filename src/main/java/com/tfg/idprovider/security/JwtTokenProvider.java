@@ -59,9 +59,9 @@ public class JwtTokenProvider {
         try{
             DecodedJWT decodedJWT = JWT.decode(token);
 
-            Claim claim = decodedJWT.getClaim("userId");
-            if(!claim.isNull()){
-                return new ObjectId(claim.asString());
+            Claim claimUserId = decodedJWT.getClaim("userId");
+            if(!claimUserId.isNull()){
+                return new ObjectId(claimUserId.asString());
             }
             return null;
         }catch (JWTDecodeException e) {
@@ -86,7 +86,7 @@ public class JwtTokenProvider {
 
 
     private Date dateExpires() {
-        return Date.from(Instant.now().plus(1, ChronoUnit.DAYS));
+        return Date.from(Instant.now().plus(1, ChronoUnit.MINUTES));
     }
 
     private Date dateNotBefore() {
