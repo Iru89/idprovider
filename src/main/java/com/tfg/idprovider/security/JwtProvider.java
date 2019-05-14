@@ -8,6 +8,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.tfg.idprovider.model.MyUserDetails;
+import com.tfg.idprovider.model.dto.JwtAuthenticationDto;
 import org.bson.types.ObjectId;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -26,15 +27,30 @@ import java.util.Map;
 public class JwtProvider {
 
     private static final String ISSUER = "authIru";
+    private static final String ID_PROVIDER = "idProvider";
+    private static final String GEOMETRIC_RESOURCES = "GeometricResources";
+
     private KeyPair keyPair;
 
     public JwtProvider(KeyPair keyPair) {
         this.keyPair = keyPair;
     }
 
-    public String generateToken(Authentication authentication) throws JWTCreationException {
+    public JwtAuthenticationDto generateTokens(MyUserDetails myUserDetails) {
 
-        MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
+        String accessToken = generateAccessToken(myUserDetails);
+        String refreshToken = generateRefreshToken(myUserDetails);
+
+        JwtAuthenticationDto jwt = JwtAuthenticationDto.JwtAuthenticationDtoBuilder
+                .builder()
+                .withAccessToken(accessToken)
+                .withRefreshToken(refreshToken)
+                .build();
+
+        return jwt;
+    }
+
+    private String generateAccessToken(MyUserDetails myUserDetails) throws JWTCreationException {
 
         Algorithm algorithm = getAlgorithm(keyPair);
         Map<String, Object> headers = getHeaderClaims();
@@ -43,12 +59,32 @@ public class JwtProvider {
                 .withHeader(headers)
                 .withIssuer(ISSUER)
                 .withSubject(myUserDetails.getEmail())
-                .withAudience()
-                .withExpiresAt(dateExpires())
+                .withAudience(ID_PROVIDER, GEOMETRIC_RESOURCES)
+                .withExpiresAt(dateExpiresAccessToken())
                 .withNotBefore(dateNotBefore())
                 .withIssuedAt(dateIssuedAt())
                 .withClaim("username", myUserDetails.getUsername())
-                .withClaim("userId", myUserDetails.getId().toString())
+                .withClaim("userId", myUserDetails.getId().toString())      //5cc2558c21ab9a2f30fdd2f3
+                .withArrayClaim("authorities", getRoles(myUserDetails))
+                .sign(algorithm);
+
+    }
+
+    private String generateRefreshToken(MyUserDetails myUserDetails){
+
+        Algorithm algorithm = getAlgorithm(keyPair);
+        Map<String, Object> headers = getHeaderClaims();
+
+        return JWT.create()
+                .withHeader(headers)
+                .withIssuer(ISSUER)
+//                .withJWTId()
+                .withSubject(myUserDetails.getId().toHexString())       //5cc2558c21ab9a2f30fdd2f3
+                .withAudience(ID_PROVIDER)
+                .withExpiresAt(dateExpiresRefreshToken())
+                .withNotBefore(dateExpiresAccessToken())
+                .withIssuedAt(dateIssuedAt())
+                .withClaim("userId", myUserDetails.getId().toString())      //5cc2558c21ab9a2f30fdd2f3
                 .withArrayClaim("authorities", getRoles(myUserDetails))
                 .sign(algorithm);
 
@@ -75,6 +111,7 @@ public class JwtProvider {
             Algorithm algorithm = getAlgorithm(keyPair);
             DecodedJWT decodedJWT = JWT.require(algorithm)
                     .withIssuer(ISSUER)
+                    .withAudience(ID_PROVIDER)
                     .acceptLeeway(5)            //Aceptem 5 seg de marge en exp nbf i iat
                     .build()
                     .verify(authToken);
@@ -85,8 +122,12 @@ public class JwtProvider {
     }
 
 
-    private Date dateExpires() {
-        return Date.from(Instant.now().plus(1, ChronoUnit.MINUTES));
+    private Date dateExpiresAccessToken() {
+        return Date.from(Instant.now().plus(20, ChronoUnit.SECONDS));
+    }
+
+    private Date dateExpiresRefreshToken() {
+        return Date.from(Instant.now().plus(1, ChronoUnit.HOURS));
     }
 
     private Date dateNotBefore() {
@@ -113,5 +154,4 @@ public class JwtProvider {
     private String[] getRoles(MyUserDetails myUserDetails) {
         return myUserDetails.getAuthorities().stream().map(a->a.getAuthority()).toArray(String[]::new);
     }
-
 }

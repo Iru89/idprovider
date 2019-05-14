@@ -1,5 +1,6 @@
 package com.tfg.idprovider.controller;
 
+import com.tfg.idprovider.model.dto.UserIdDto;
 import com.tfg.idprovider.model.dto.UserLogInDto;
 import com.tfg.idprovider.model.dto.UserSignUpDto;
 import com.tfg.idprovider.service.LogInService;
@@ -29,5 +30,10 @@ public class AuthController {
     @RequestMapping(value = "/signup", method = RequestMethod.POST)
     public ResponseEntity createUser(@Valid @RequestBody UserSignUpDto user){
         return signUpService.registerNewUserAccount(user);
+    }
+
+    @RequestMapping(value = "/refresh", method = RequestMethod.POST)
+    public ResponseEntity refreshTokens(@Valid @RequestBody UserIdDto userIdDto){
+        return logInService.refreshTokens(userIdDto.getId());
     }
 }

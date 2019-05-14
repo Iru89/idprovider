@@ -1,10 +1,13 @@
 package com.tfg.idprovider.service;
 
 import com.auth0.jwt.exceptions.JWTCreationException;
+import com.tfg.idprovider.model.MyUserDetails;
 import com.tfg.idprovider.model.dto.JwtAuthenticationDto;
 import com.tfg.idprovider.model.dto.JwtAuthenticationDto.JwtAuthenticationDtoBuilder;
 import com.tfg.idprovider.model.dto.UserLogInDto;
+import com.tfg.idprovider.repository.UserRepository;
 import com.tfg.idprovider.security.JwtProvider;
+import org.bson.types.ObjectId;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,10 +21,12 @@ public class LogInService {
 
     private AuthenticationManager authenticationManager;
     private JwtProvider tokenProvider;
+    private MongoUserDetailsService userDetailsService;
 
-    public LogInService(AuthenticationManager authenticationManager, JwtProvider tokenProvider) {
+    public LogInService(AuthenticationManager authenticationManager, JwtProvider jwtProvider, MongoUserDetailsService userDetailsService ) {
         this.authenticationManager = authenticationManager;
-        this.tokenProvider = tokenProvider;
+        this.tokenProvider = jwtProvider;
+        this.userDetailsService = userDetailsService;
     }
 
     public ResponseEntity logIn(UserLogInDto user) {
@@ -33,13 +38,22 @@ public class LogInService {
         );
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
+        MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
 
+        return getTokens(myUserDetails);
+    }
+
+    public ResponseEntity refreshTokens(ObjectId id) {
+
+        MyUserDetails myUserDetails = (MyUserDetails) userDetailsService.loadUserById(id);
+        return getTokens(myUserDetails);
+
+    }
+
+    private ResponseEntity getTokens(MyUserDetails myUserDetails) {
         try {
-            String accessToken = tokenProvider.generateToken(authentication);
-            JwtAuthenticationDto jwt = JwtAuthenticationDtoBuilder.builder()
-                    .withAccessToken(accessToken)
-                    .build();
 
+            JwtAuthenticationDto jwt = tokenProvider.generateTokens(myUserDetails);
             return ResponseEntity.ok(jwt);
 
         }catch (JWTCreationException e) {
