@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -30,17 +31,21 @@ public class LogInService {
     }
 
     public ResponseEntity logIn(UserLogInDto user) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        user.getUsernameOrEmail(),
-                        user.getPassword()
-                )
-        );
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            user.getUsernameOrEmail(),
+                            user.getPassword()
+                    )
+            );
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
 
-        return getTokens(myUserDetails);
+            return getTokens(myUserDetails);
+        }catch (AuthenticationException e){
+            return (ResponseEntity.badRequest().body("Bad Credentials"));
+        }
     }
 
     public ResponseEntity refreshTokens(ObjectId id) {

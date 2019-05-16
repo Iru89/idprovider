@@ -123,7 +123,7 @@ public class JwtProvider {
 
 
     private Date dateExpiresAccessToken() {
-        return Date.from(Instant.now().plus(20, ChronoUnit.SECONDS));
+        return Date.from(Instant.now().plus(20, ChronoUnit.HOURS));
     }
 
     private Date dateExpiresRefreshToken() {
