@@ -14,6 +14,7 @@ public class MyUserDetails implements UserDetails {
 
     @Id
     private final ObjectId id;
+    private final ObjectId jwtRefreshId;
 
     private final String username;
     private final String password;
@@ -21,8 +22,9 @@ public class MyUserDetails implements UserDetails {
     private final List<SimpleGrantedAuthority> authorities;
     private final PersonalData personalData;
 
-    private MyUserDetails(ObjectId id, String username, String password, String email, List<SimpleGrantedAuthority> authorities, PersonalData personalData) {
+    private MyUserDetails(ObjectId id, ObjectId jwtRefreshId, String username, String password, String email, List<SimpleGrantedAuthority> authorities, PersonalData personalData) {
         this.id = id;
+        this.jwtRefreshId = jwtRefreshId;
 
         this.username = username;
         this.password = password;
@@ -38,6 +40,7 @@ public class MyUserDetails implements UserDetails {
 
         return new MyUserDetails(
                 user.getId(),
+                user.getJwtRefreshId(),
                 user.getUsername(),
                 user.getPassword(),
                 user.getEmail(),
@@ -48,6 +51,10 @@ public class MyUserDetails implements UserDetails {
 
     public ObjectId getId() {
         return id;
+    }
+
+    public ObjectId getJwtRefreshId() {
+        return jwtRefreshId;
     }
 
     @Override

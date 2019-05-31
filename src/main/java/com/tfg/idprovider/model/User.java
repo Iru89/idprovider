@@ -10,14 +10,16 @@ public class User {
     @Id
     private ObjectId id;
 
+    private ObjectId jwtRefreshId;
     private String username;
     private String password;
     private String email;
     private List<Role> roles;
     private PersonalData personalData;
 
-    private User(ObjectId id, String username, String password, String email, List<Role> roles, PersonalData personalData) {
+    private User(ObjectId id, ObjectId jwtRefreshId, String username, String password, String email, List<Role> roles, PersonalData personalData) {
         this.id = id;
+        this.jwtRefreshId = jwtRefreshId;
         this.username = username;
         this.password = password;
 
@@ -28,6 +30,10 @@ public class User {
 
     public ObjectId getId() {
         return id;
+    }
+
+    public ObjectId getJwtRefreshId() {
+        return jwtRefreshId;
     }
 
     public String getUsername() {
@@ -51,7 +57,8 @@ public class User {
     }
 
     public static class UserBuilder{
-        private  ObjectId id;
+        private ObjectId id;
+        private ObjectId jwtRefreshId;
         private String username;
         private String password;
         private String email;
@@ -67,6 +74,11 @@ public class User {
 
         public UserBuilder withId(ObjectId id) {
             this.id = id;
+            return this;
+        }
+
+        public UserBuilder withjwtRefreshId(ObjectId jwtRefreshId) {
+            this.jwtRefreshId = jwtRefreshId;
             return this;
         }
 
@@ -96,7 +108,7 @@ public class User {
         }
 
         public User build(){
-            return new User(id, username, password, email, roles, personalData);
+            return new User(id, jwtRefreshId, username, password, email, roles, personalData);
         }
     }
 }

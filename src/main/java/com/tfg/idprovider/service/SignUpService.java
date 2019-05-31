@@ -46,6 +46,7 @@ public class SignUpService {
     private User saveNewUser(UserSignUpDto accountDto, PersonalData personalData) {
         final User newUser = UserBuilder.builder()
                 .withId(new ObjectId())
+                .withjwtRefreshId(new ObjectId())
                 .withUsername(accountDto.getUsername())
                 .withPassword(passwordEncoder.encode(accountDto.getPassword()))         //password Encriptat amb BCrypt
                 .withEmail(accountDto.getEmail())
@@ -53,9 +54,9 @@ public class SignUpService {
                 .withPersonalData(personalData)
                 .build();
 
-        userRepository.save(newUser);
+        User saveUser = userRepository.save(newUser);   //TODO Comprobar que funciona be el saveUser
 
-        return newUser;
+        return saveUser;
     }
 
     private PersonalData getPersonalData(UserSignUpDto accountDto) {

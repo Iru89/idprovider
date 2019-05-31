@@ -2,6 +2,8 @@ package com.tfg.idprovider.service;
 
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.tfg.idprovider.model.MyUserDetails;
+import com.tfg.idprovider.model.Role;
+import com.tfg.idprovider.model.User;
 import com.tfg.idprovider.model.dto.JwtAuthenticationDto;
 import com.tfg.idprovider.model.dto.JwtAuthenticationDto.JwtAuthenticationDtoBuilder;
 import com.tfg.idprovider.model.dto.UserLogInDto;
@@ -17,17 +19,22 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class LogInService {
 
     private AuthenticationManager authenticationManager;
     private JwtProvider tokenProvider;
     private MongoUserDetailsService userDetailsService;
+    private UserRepository userRepository;
 
-    public LogInService(AuthenticationManager authenticationManager, JwtProvider jwtProvider, MongoUserDetailsService userDetailsService ) {
+    public LogInService(AuthenticationManager authenticationManager, JwtProvider tokenProvider, MongoUserDetailsService userDetailsService, UserRepository userRepository) {
         this.authenticationManager = authenticationManager;
-        this.tokenProvider = jwtProvider;
+        this.tokenProvider = tokenProvider;
         this.userDetailsService = userDetailsService;
+        this.userRepository = userRepository;
     }
 
     public ResponseEntity logIn(UserLogInDto user) {
@@ -58,7 +65,9 @@ public class LogInService {
     private ResponseEntity getTokens(MyUserDetails myUserDetails) {
         try {
 
+
             JwtAuthenticationDto jwt = tokenProvider.generateTokens(myUserDetails);
+            MyUserDetails newMyUserDetails = updateJwtRefreshId(myUserDetails);
             return ResponseEntity.ok(jwt);
 
         }catch (JWTCreationException e) {
@@ -66,5 +75,33 @@ public class LogInService {
             //Si falla la creacion del JWT retornamos un HttpStatus 503
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(e.toString());
         }
+    }
+
+    private MyUserDetails updateJwtRefreshId(MyUserDetails myUserDetails) {
+        ObjectId jwtId = new ObjectId();
+        List<Role> roles = myUserDetails.getAuthorities().stream()
+                .map(role -> {
+                    if(role.getAuthority().equals(Role.ROLE_USER.name())){
+                        return Role.ROLE_USER;
+                    }else if(role.getAuthority().equals(Role.ROLE_ADMIN.name())){
+                        return Role.ROLE_ADMIN;
+                    }else return null;
+                })
+                .collect(Collectors.toList());
+
+        User newUser = User.UserBuilder
+                .builder()
+                .withId(myUserDetails.getId())
+                .withjwtRefreshId(jwtId)
+                .withUsername(myUserDetails.getUsername())
+                .withPassword(myUserDetails.getPassword())
+                .withEmail(myUserDetails.getEmail())
+                .withAuthorities(roles)
+                .withPersonalData(myUserDetails.getPersonalData())
+                .build();
+
+        User saveUser = userRepository.save(newUser);
+
+        return MyUserDetails.create(saveUser);
     }
 }

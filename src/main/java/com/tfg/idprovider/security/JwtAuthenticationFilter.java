@@ -1,5 +1,6 @@
 package com.tfg.idprovider.security;
 
+import com.tfg.idprovider.model.MyUserDetails;
 import com.tfg.idprovider.service.MongoUserDetailsService;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
@@ -34,7 +35,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             String jwt = getJwtFromRequest(request);
 
-            if (StringUtils.hasText(jwt) && jwtProvider.validateToken(jwt)) {
+            if (StringUtils.hasText(jwt)) {
                 ObjectId userId = jwtProvider.getUserIdFromJWT(jwt);
 
                 UserDetails userDetails = mongoUserDetailsService.loadUserById(userId);
@@ -52,8 +53,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private String getJwtFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
+
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7, bearerToken.length());
+            String jwt = bearerToken.substring(7, bearerToken.length());
+            if(jwtProvider.validateToken(jwt)){
+                return jwt;
+            }
+        }else if(StringUtils.hasText(bearerToken) && bearerToken.startsWith("BearerRefresh ")){
+            String jwtRefresh = bearerToken.substring(14, bearerToken.length());
+            if(jwtProvider.validateToken(jwtRefresh)){
+                ObjectId userId = jwtProvider.getUserIdFromJWT(jwtRefresh);
+                MyUserDetails userDetails = (MyUserDetails) mongoUserDetailsService.loadUserById(userId);
+                if(jwtProvider.validateTokenRefresh(jwtRefresh, userDetails.getJwtRefreshId())){
+                    return jwtRefresh;
+                }
+            }
         }
         return null;
     }

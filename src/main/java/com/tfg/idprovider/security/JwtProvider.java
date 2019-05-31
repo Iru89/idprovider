@@ -9,8 +9,8 @@ import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.tfg.idprovider.model.MyUserDetails;
 import com.tfg.idprovider.model.dto.JwtAuthenticationDto;
+import com.tfg.idprovider.repository.UserRepository;
 import org.bson.types.ObjectId;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.security.KeyPair;
@@ -32,7 +32,7 @@ public class JwtProvider {
 
     private KeyPair keyPair;
 
-    public JwtProvider(KeyPair keyPair) {
+    public JwtProvider(KeyPair keyPair, UserRepository userRepository) {
         this.keyPair = keyPair;
     }
 
@@ -64,7 +64,7 @@ public class JwtProvider {
                 .withNotBefore(dateNotBefore())
                 .withIssuedAt(dateIssuedAt())
                 .withClaim("username", myUserDetails.getUsername())
-                .withClaim("userId", myUserDetails.getId().toString())      //5cc2558c21ab9a2f30fdd2f3
+                .withClaim("userId", myUserDetails.getId().toString())
                 .withArrayClaim("authorities", getRoles(myUserDetails))
                 .sign(algorithm);
 
@@ -78,13 +78,13 @@ public class JwtProvider {
         return JWT.create()
                 .withHeader(headers)
                 .withIssuer(ISSUER)
-//                .withJWTId()
-                .withSubject(myUserDetails.getId().toHexString())       //5cc2558c21ab9a2f30fdd2f3
+                .withJWTId(myUserDetails.getJwtRefreshId().toHexString())
+                .withSubject(myUserDetails.getId().toHexString())
                 .withAudience(ID_PROVIDER)
                 .withExpiresAt(dateExpiresRefreshToken())
                 .withNotBefore(dateExpiresAccessToken())
                 .withIssuedAt(dateIssuedAt())
-                .withClaim("userId", myUserDetails.getId().toString())      //5cc2558c21ab9a2f30fdd2f3
+                .withClaim("userId", myUserDetails.getId().toString())
                 .withArrayClaim("authorities", getRoles(myUserDetails))
                 .sign(algorithm);
 
@@ -121,9 +121,22 @@ public class JwtProvider {
         }
     }
 
+    public boolean validateTokenRefresh(String tokenRefresh, ObjectId jwtRefreshId) {
+        try{
+            Algorithm algorithm = getAlgorithm(keyPair);
+            DecodedJWT decodedJWT = JWT.require(algorithm)
+                    .withJWTId(jwtRefreshId.toHexString())
+                    .acceptLeeway(5)            //Aceptem 5 seg de marge en exp nbf i iat
+                    .build()
+                    .verify(tokenRefresh);
+            return true;
+        }catch (JWTVerificationException e ){
+            return false;
+        }
+    }
 
     private Date dateExpiresAccessToken() {
-        return Date.from(Instant.now().plus(20, ChronoUnit.MINUTES));
+        return Date.from(Instant.now().plus(1, ChronoUnit.MINUTES));
     }
 
     private Date dateExpiresRefreshToken() {
