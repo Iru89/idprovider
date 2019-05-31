@@ -1,6 +1,7 @@
 package com.tfg.idprovider.service;
 
 import com.tfg.idprovider.model.User;
+import com.tfg.idprovider.model.dto.ProfileDto;
 import com.tfg.idprovider.repository.UserRepository;
 import org.bson.types.ObjectId;
 import org.springframework.http.ResponseEntity;
@@ -25,11 +26,20 @@ public class AdminService {
         return ResponseEntity.ok().body(users);
     }
 
-    public ResponseEntity getMyUser(String username) {
+    public ResponseEntity getMyProfile(String username) {
         final User user = userRepository.findByUsername(username).orElseThrow(
                 () -> new UsernameNotFoundException("User not found with username : " + username)
         );
-        return ResponseEntity.ok().body(user);
+
+        ProfileDto profile = ProfileDto.ProfileDtoBuilder
+                .builder()
+                .withUsername(user.getUsername())
+                .withEmail(user.getEmail())
+                .withAuthorities(user.getRoles())
+                .withPersonalData(user.getPersonalData())
+                .build();
+
+        return ResponseEntity.ok().body(profile);
 
     }
 }
