@@ -66,8 +66,8 @@ public class LogInService {
         try {
 
 
-            JwtAuthenticationDto jwt = tokenProvider.generateTokens(myUserDetails);
             MyUserDetails newMyUserDetails = updateJwtRefreshId(myUserDetails);
+            JwtAuthenticationDto jwt = tokenProvider.generateTokens(myUserDetails);
             return ResponseEntity.ok(jwt);
 
         }catch (JWTCreationException e) {
