@@ -23,8 +23,8 @@ public class AuthController {
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public ResponseEntity getJWT(@Valid @RequestBody UserLogInDto user){
-        return logInService.logIn(user);
+    public ResponseEntity loginRequest(@Valid @RequestBody UserLogInDto user){
+        return logInService.login(user);
     }
 
     @RequestMapping(value = "/signup", method = RequestMethod.POST)

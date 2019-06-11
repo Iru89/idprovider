@@ -37,7 +37,7 @@ public class LogInService {
         this.userRepository = userRepository;
     }
 
-    public ResponseEntity logIn(UserLogInDto user) {
+    public ResponseEntity login(UserLogInDto user) {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -66,8 +66,8 @@ public class LogInService {
         try {
 
 
-            JwtAuthenticationDto jwt = tokenProvider.generateTokens(myUserDetails);
             MyUserDetails newMyUserDetails = updateJwtRefreshId(myUserDetails);
+            JwtAuthenticationDto jwt = tokenProvider.generateTokens(newMyUserDetails);
             return ResponseEntity.ok(jwt);
 
         }catch (JWTCreationException e) {
