@@ -1,11 +1,14 @@
 package com.tfg.idprovider.controller;
 
-import com.tfg.idprovider.model.dto.UserIdDto;
+import com.tfg.idprovider.model.MyUserDetails;
 import com.tfg.idprovider.model.dto.UserLogInDto;
 import com.tfg.idprovider.model.dto.UserSignUpDto;
 import com.tfg.idprovider.service.LogInService;
 import com.tfg.idprovider.service.SignUpService;
+import org.bson.types.ObjectId;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -32,8 +35,11 @@ public class AuthController {
         return signUpService.registerNewUserAccount(user);
     }
 
-    @RequestMapping(value = "/refresh", method = RequestMethod.POST)
-    public ResponseEntity refreshTokens(@Valid @RequestBody UserIdDto userIdDto){
-        return logInService.refreshTokens(userIdDto.getId());
+    @RequestMapping(value = "/refresh", method = RequestMethod.GET)
+    public ResponseEntity refreshTokens(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
+        ObjectId userId = myUserDetails.getId();
+        return logInService.refreshTokens(userId);
     }
 }
