@@ -26,7 +26,7 @@ public class AdminService {
         return ResponseEntity.ok().body(users);
     }
 
-    public ResponseEntity getMyProfile(String username) {
+    public ResponseEntity getUserProfile(String username) {
 
         final User user = userRepository.findByUsername(username).orElseThrow(
                 () -> new UsernameNotFoundException("User not found with username : " + username)

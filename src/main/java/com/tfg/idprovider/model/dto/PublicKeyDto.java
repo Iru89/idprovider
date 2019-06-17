@@ -1,9 +1,5 @@
 package com.tfg.idprovider.model.dto;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-
-@JsonDeserialize(builder = PublicKeyDto.PublicKeyDtoBuilder.class)
 public class PublicKeyDto {
 
     private final String publicKeyBase64;
@@ -16,7 +12,6 @@ public class PublicKeyDto {
         return publicKeyBase64;
     }
 
-    @JsonPOJOBuilder
     public static class PublicKeyDtoBuilder{
         private String publicKeyBase64;
 

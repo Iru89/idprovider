@@ -26,8 +26,8 @@ public class AdminController {
 
     @RequestMapping(value = "/user/{username}", method = RequestMethod.GET)
     @PreAuthorize("#username == authentication.principal.username")
-    public ResponseEntity myProfile(@PathVariable("username") String username){
-        return adminService.getMyProfile(username);
+    public ResponseEntity getProfile(@PathVariable("username") String username){
+        return adminService.getUserProfile(username);
     }
 
 }

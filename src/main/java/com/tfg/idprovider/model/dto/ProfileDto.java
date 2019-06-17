@@ -1,13 +1,10 @@
 package com.tfg.idprovider.model.dto;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.tfg.idprovider.model.PersonalData;
 import com.tfg.idprovider.model.Role;
 
 import java.util.List;
 
-@JsonDeserialize(builder = ProfileDto.ProfileDtoBuilder.class)
 public class ProfileDto {
 
     private final String username;
@@ -38,7 +35,6 @@ public class ProfileDto {
         return personalData;
     }
 
-    @JsonPOJOBuilder
     public static class ProfileDtoBuilder{
         private String username;
         private String email;

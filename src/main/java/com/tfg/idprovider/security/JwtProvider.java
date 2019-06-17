@@ -32,7 +32,7 @@ public class JwtProvider {
 
     private KeyPair keyPair;
 
-    public JwtProvider(KeyPair keyPair, UserRepository userRepository) {
+    public JwtProvider(KeyPair keyPair) {
         this.keyPair = keyPair;
     }
 
@@ -79,7 +79,6 @@ public class JwtProvider {
                 .withHeader(headers)
                 .withIssuer(ISSUER)
                 .withJWTId(myUserDetails.getJwtRefreshId().toHexString())
-                .withSubject(myUserDetails.getId().toHexString())
                 .withAudience(ID_PROVIDER)
                 .withExpiresAt(dateExpiresRefreshToken())
                 .withNotBefore(dateExpiresAccessToken())
@@ -125,7 +124,9 @@ public class JwtProvider {
         try{
             Algorithm algorithm = getAlgorithm(keyPair);
             DecodedJWT decodedJWT = JWT.require(algorithm)
+                    .withIssuer(ISSUER)
                     .withJWTId(jwtRefreshId.toHexString())
+                    .withAudience(ID_PROVIDER)
                     .acceptLeeway(5)            //Aceptem 5 seg de marge en exp nbf i iat
                     .build()
                     .verify(tokenRefresh);
@@ -136,7 +137,7 @@ public class JwtProvider {
     }
 
     private Date dateExpiresAccessToken() {
-        return Date.from(Instant.now().plus(1, ChronoUnit.MINUTES));
+        return Date.from(Instant.now().plus(20, ChronoUnit.MINUTES));
     }
 
     private Date dateExpiresRefreshToken() {

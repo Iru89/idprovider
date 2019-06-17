@@ -1,9 +1,5 @@
 package com.tfg.idprovider.model;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-
-@JsonDeserialize(builder = PersonalData.PersonalDataBuilder.class)
 public class PersonalData {
 
     private final String firstName;
@@ -23,7 +19,6 @@ public class PersonalData {
     }
 
 
-    @JsonPOJOBuilder
     public static class PersonalDataBuilder{
         private String firstName;
         private String lastName;
