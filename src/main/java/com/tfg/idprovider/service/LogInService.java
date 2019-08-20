@@ -27,13 +27,11 @@ public class LogInService {
 
     private AuthenticationManager authenticationManager;
     private JwtProvider tokenProvider;
-    private MongoUserDetailsService userDetailsService;
     private UserRepository userRepository;
 
-    public LogInService(AuthenticationManager authenticationManager, JwtProvider tokenProvider, MongoUserDetailsService userDetailsService, UserRepository userRepository) {
+    public LogInService(AuthenticationManager authenticationManager, JwtProvider tokenProvider, UserRepository userRepository) {
         this.authenticationManager = authenticationManager;
         this.tokenProvider = tokenProvider;
-        this.userDetailsService = userDetailsService;
         this.userRepository = userRepository;
     }
 
@@ -55,9 +53,8 @@ public class LogInService {
         }
     }
 
-    public ResponseEntity refreshTokens(ObjectId id) {
+    public ResponseEntity refreshTokens(MyUserDetails myUserDetails) {
 
-        MyUserDetails myUserDetails = (MyUserDetails) userDetailsService.loadUserById(id);
         return getTokens(myUserDetails);
 
     }
@@ -72,7 +69,7 @@ public class LogInService {
 
         }catch (JWTCreationException e) {
             e.printStackTrace();
-            //Si falla la creacion del JWT retornamos un HttpStatus 503
+            //Si falla la creacio del JWT retornem un HttpStatus 503
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(e.toString());
         }
     }

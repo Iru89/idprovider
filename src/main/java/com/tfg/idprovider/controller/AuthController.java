@@ -39,7 +39,6 @@ public class AuthController {
     public ResponseEntity refreshTokens(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
-        ObjectId userId = myUserDetails.getId();
-        return logInService.refreshTokens(userId);
+        return logInService.refreshTokens(myUserDetails);
     }
 }

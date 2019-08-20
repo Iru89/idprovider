@@ -25,7 +25,7 @@ public class SignUpService {
         this.userRepository = userRepository;
     }
 
-    /*Permite hacer el login con el username o con el email*/
+    /*Permet fer el login amb el username o el email*/
     public ResponseEntity registerNewUserAccount(UserSignUpDto userSignUpDto) {
 
         if(userRepository.existsByUsername(userSignUpDto.getUsername())) {
@@ -48,13 +48,13 @@ public class SignUpService {
                 .withId(new ObjectId())
                 .withjwtRefreshId(new ObjectId())
                 .withUsername(accountDto.getUsername())
-                .withPassword(passwordEncoder.encode(accountDto.getPassword()))         //password Encriptat amb BCrypt
+                .withPassword(passwordEncoder.encode(accountDto.getPassword()))         //password encriptat amb BCrypt
                 .withEmail(accountDto.getEmail())
                 .withAuthorities(Collections.singletonList(Role.ROLE_USER))
                 .withPersonalData(personalData)
                 .build();
 
-        User saveUser = userRepository.save(newUser);   //TODO Comprobar que funciona be el saveUser
+        User saveUser = userRepository.save(newUser);
 
         return saveUser;
     }
